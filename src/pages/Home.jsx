@@ -3,6 +3,7 @@ import { ArrowUpRight, Mail, FileText, Menu, X } from 'lucide-react';
 import TechText from '../components/TechText';
 import GhostType from '../components/GhostType';
 import ColorRevealPhoto from '../components/ColorRevealPhoto';
+import TerminalWindow from '../components/TerminalWindow';
 import mePhoto from '../assets/me.png';
 
 function GithubIcon(props) {
@@ -70,6 +71,25 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [mobileMenuOpen]);
 
+  // Scroll to hash target on mount if present
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const scrollToHash = () => {
+        const target = document.querySelector(hash);
+        if (target) {
+          target.scrollIntoView({ behavior: 'auto' });
+        }
+      };
+      const t1 = setTimeout(scrollToHash, 300);
+      const t2 = setTimeout(scrollToHash, 900);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    }
+  }, []);
+
   const socialLinks = [
     {
       name: 'GitHub',
@@ -99,7 +119,7 @@ export default function Home() {
 
   return (
     <main
-      className="w-full min-h-screen bg-white flex items-center justify-center font-['Manrope',sans-serif] selection:bg-neutral-900 selection:text-white overflow-x-hidden"
+      className="w-full min-h-screen bg-white flex flex-col items-center font-['Manrope',sans-serif] selection:bg-neutral-900 selection:text-white overflow-x-hidden"
       style={{
         backgroundColor: 'var(--frame-bg, #ffffff)'
       }}
@@ -107,7 +127,7 @@ export default function Home() {
       {/* Full Viewport Canvas Card (governed by --frame) */}
       <div
         ref={cardRef}
-        className="relative bg-white flex flex-col justify-between overflow-x-hidden overflow-y-auto min-[900px]:overflow-hidden transition-all duration-300"
+        className="relative bg-white flex flex-col justify-between overflow-x-hidden overflow-y-auto min-[900px]:overflow-hidden transition-all duration-300 shrink-0"
         style={{
           margin: 'var(--frame, 0px)',
           borderRadius: 'var(--frame, 0px)',
@@ -378,6 +398,14 @@ export default function Home() {
         </div>
 
       </div>
+
+      {/* ================= TERMINAL SECTION ================= */}
+      <section
+        id="terminal-section"
+        className="w-full max-w-[860px] px-4 py-16 sm:py-24 flex items-center justify-center shrink-0"
+      >
+        <TerminalWindow />
+      </section>
     </main>
   );
 }
