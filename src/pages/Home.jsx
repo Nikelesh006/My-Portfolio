@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { ArrowUpRight, Mail, FileText } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { ArrowUpRight, Mail, FileText, Menu, X } from 'lucide-react';
 import TechText from '../components/TechText';
 import GhostType from '../components/GhostType';
 import ColorRevealPhoto from '../components/ColorRevealPhoto';
@@ -44,7 +44,31 @@ function LinkedinIcon(props) {
 }
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const cardRef = useRef(null);
+
+  // Prevent background scrolling when mobile menu modal is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
+  // Handle escape key to close mobile menu
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
 
   const socialLinks = [
     {
@@ -61,7 +85,7 @@ export default function Home() {
     },
     {
       name: 'Email',
-      href: 'mailto:nikeleshwaran006@gmail.com',
+      href: 'mailto:nikelesh2006@gmail.com',
       icon: Mail,
       isExternal: false
     },
@@ -127,20 +151,109 @@ export default function Home() {
             {/* Let's Talk CTA */}
             <a
               href="#contact"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-xs sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs shrink-0"
+              className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-[11px] sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs shrink-0"
             >
               <span>Let's Talk</span>
               <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </a>
+
+            {/* Mobile Menu Button (< 900px) */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="min-[900px]:hidden flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 transition-colors shrink-0"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
           </div>
         </header>
 
+        {/* ================= MOBILE NAVIGATION MODAL (< 900px) ================= */}
+        {mobileMenuOpen && (
+          <div className="min-[900px]:hidden fixed inset-0 z-50 flex flex-col justify-between bg-white/95 backdrop-blur-xl p-6 transition-all duration-300">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-neutral-200/90 shadow-xs text-xs font-semibold text-neutral-800">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>Available for new projects</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors"
+                aria-label="Close menu"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Nav Links */}
+            <nav className="flex flex-col gap-5 py-6">
+              {[
+                { label: 'Work', href: '#work', count: '4' },
+                { label: 'Services', href: '#services', count: '3' },
+                { label: 'Experience', href: '#experience', count: '1+' },
+                { label: 'Contact', href: '#contact' }
+              ].map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-between text-2xl font-bold tracking-tight text-neutral-900 hover:text-neutral-500 transition-colors"
+                >
+                  <span>{item.label}</span>
+                  {item.count ? (
+                    <span className="text-sm font-mono text-neutral-400 font-normal">[{item.count}]</span>
+                  ) : (
+                    <ArrowUpRight className="w-5 h-5 text-neutral-400" />
+                  )}
+                </a>
+              ))}
+            </nav>
+
+            {/* Modal Footer / CTAs & Socials */}
+            <div className="flex flex-col gap-4 border-t border-neutral-100 pt-5">
+              <a
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-[#0a0a0a] text-white font-semibold text-sm hover:bg-neutral-800 transition-all shadow-xs"
+              >
+                <span>Let's Talk</span>
+                <ArrowUpRight className="w-4 h-4" />
+              </a>
+
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                {socialLinks.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      target={item.isExternal ? '_blank' : undefined}
+                      rel={item.isExternal ? 'noopener noreferrer' : undefined}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200/80 text-xs font-semibold text-neutral-700 hover:text-black hover:bg-neutral-100 transition-colors"
+                    >
+                      <Icon className="w-3.5 h-3.5 text-neutral-500" />
+                      <span>{item.name}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ================= 2. MIDDLE REGION: TECHTEXT NAME ================= */}
-        <div className="relative w-full max-w-full overflow-hidden flex-1 min-h-0 z-[1] flex items-center justify-center pointer-events-none pt-[1.5vh] pb-[1vh]">
+        <div className="relative w-full max-w-full overflow-hidden flex-1 min-h-0 z-[1] flex items-center justify-center pointer-events-none pt-[1vh] pb-[0.5vh]">
           <div
             className="w-full max-w-full relative pointer-events-auto"
             style={{
-              height: 'clamp(200px, 34vh, 420px)'
+              height: 'clamp(150px, 30vh, 420px)'
             }}
           >
             <TechText
@@ -167,7 +280,7 @@ export default function Home() {
         <div
           className="absolute bottom-0 left-1/2 -translate-x-1/2 z-[2] pointer-events-none flex items-end justify-center select-none"
           style={{
-            height: 'clamp(380px, 62vh, 800px)',
+            height: 'clamp(320px, 58vh, 800px)',
             width: 'auto',
             pointerEvents: 'none'
           }}
@@ -183,14 +296,11 @@ export default function Home() {
 
         {/* ================= 3. BOTTOM REGION: CONTENT & SOCIALS ================= */}
         <div
-          className="relative z-10 w-full max-w-full px-4 sm:px-6 md:px-10 flex flex-col min-[900px]:flex-row justify-between items-start min-[900px]:items-end gap-6 pointer-events-auto shrink-0"
-          style={{
-            paddingBottom: 'clamp(24px, 3vh, 40px)'
-          }}
+          className="relative z-10 w-full max-w-full px-4 sm:px-6 md:px-10 flex flex-col min-[900px]:flex-row justify-between items-start min-[900px]:items-end gap-4 min-[900px]:gap-6 pointer-events-auto shrink-0 pb-4 sm:pb-6 min-[900px]:pb-8"
         >
           {/* Bottom Left: Title, Description & CTA */}
           <div
-            className="w-full min-[900px]:max-w-[min(46vw,720px)] bg-white/80 min-[900px]:bg-transparent backdrop-blur-xs min-[900px]:backdrop-blur-none p-3 min-[900px]:p-0 rounded-xl"
+            className="w-full min-[900px]:max-w-[min(46vw,720px)] bg-white/85 min-[900px]:bg-transparent backdrop-blur-md min-[900px]:backdrop-blur-none border border-neutral-200/70 min-[900px]:border-none p-4 sm:p-5 min-[900px]:p-0 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] min-[900px]:shadow-none"
           >
             {/* Fixed min-height for one line so GhostType transitions do not shift layout */}
             <div className="min-h-[1.25em] flex items-center">
@@ -221,32 +331,31 @@ export default function Home() {
             </div>
 
             <p
-              className="text-neutral-500 font-normal leading-relaxed"
-              style={{
-                fontSize: 'clamp(13px, 1vw, 16px)',
-                maxWidth: '420px',
-                marginTop: 'clamp(8px, 1.2vh, 14px)'
-              }}
+              className="text-neutral-500 font-normal leading-relaxed text-xs sm:text-sm mt-2 sm:mt-2.5 max-w-[420px]"
             >
               I build and ship full-stack products, from backend APIs to deployment pipelines.
             </p>
 
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#0a0a0a] text-white font-semibold hover:bg-neutral-800 transition-all shadow-xs"
-              style={{
-                fontSize: 'clamp(12px, 0.9vw, 14px)',
-                padding: 'clamp(8px, 1.2vh, 12px) clamp(16px, 1.5vw, 22px)',
-                marginTop: 'clamp(10px, 1.5vh, 18px)'
-              }}
-            >
-              <span>Let's collaborate</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </a>
+            <div className="flex items-center gap-3 mt-3 sm:mt-4">
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-xs sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs"
+              >
+                <span>Let's collaborate</span>
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </a>
+              <a
+                href="#resume"
+                className="inline-flex sm:hidden items-center gap-1.5 px-3.5 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-semibold transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5 text-neutral-600" />
+                <span>Resume</span>
+              </a>
+            </div>
           </div>
 
-          {/* Bottom Right: Social Pills */}
-          <div className="w-full min-[900px]:w-auto flex flex-wrap min-[900px]:flex-col items-start min-[900px]:items-end gap-2.5">
+          {/* Bottom Right: Social Pills (Grid 2x2 on mobile, vertical stack on desktop) */}
+          <div className="w-full min-[900px]:w-auto grid grid-cols-2 sm:flex sm:flex-wrap min-[900px]:flex-col items-stretch min-[900px]:items-end gap-2 sm:gap-2.5">
             {socialLinks.map((item) => {
               const Icon = item.icon;
               return (
@@ -255,10 +364,12 @@ export default function Home() {
                   href={item.href}
                   target={item.isExternal ? '_blank' : undefined}
                   rel={item.isExternal ? 'noopener noreferrer' : undefined}
-                  className="group inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/90 backdrop-blur-sm border border-neutral-200/90 shadow-[0_2px_6px_rgba(0,0,0,0.03)] text-xs font-semibold text-neutral-700 hover:text-black hover:border-neutral-400 hover:-translate-y-0.5 transition-all duration-200"
+                  className="group inline-flex items-center justify-between sm:justify-start gap-2 px-3.5 py-2 sm:px-4 sm:py-2 rounded-full bg-white/90 backdrop-blur-sm border border-neutral-200/90 shadow-[0_2px_6px_rgba(0,0,0,0.03)] text-xs font-semibold text-neutral-700 hover:text-black hover:border-neutral-400 hover:-translate-y-0.5 transition-all duration-200"
                 >
-                  <Icon className="w-3.5 h-3.5 text-neutral-500 group-hover:text-black transition-colors" />
-                  <span>{item.name}</span>
+                  <div className="flex items-center gap-2">
+                    <Icon className="w-3.5 h-3.5 text-neutral-500 group-hover:text-black transition-colors" />
+                    <span>{item.name}</span>
+                  </div>
                   <ArrowUpRight className="w-3 h-3 text-neutral-400 group-hover:text-black transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
               );

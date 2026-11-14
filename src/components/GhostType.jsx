@@ -233,18 +233,18 @@ export default function GhostType({
           />
         )}
 
-        {/* Tab Hint badge */}
+        {/* Tab / Tap Hint badge */}
         {hint && !isAccepted && completionProgress > 0 && (
           <span
             onClick={(e) => {
               e.stopPropagation();
               acceptCompletion();
             }}
-            title="Press Tab or Click to accept"
+            title={isMobile ? "Tap to accept" : "Press Tab or Click to accept"}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              marginLeft: '10px',
+              marginLeft: '8px',
               padding: '2px 7px',
               fontSize: '11px',
               fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
@@ -259,7 +259,7 @@ export default function GhostType({
               transition: 'background 0.15s ease, border-color 0.15s ease'
             }}
           >
-            {hintLabel}
+            {isMobile ? 'Tap ↵' : hintLabel}
           </span>
         )}
       </Component>

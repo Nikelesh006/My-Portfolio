@@ -24,6 +24,8 @@ body,
   background-color: #ffffff;
   overflow-x: hidden;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
 }
 
 .hero-ghost-title {
@@ -35,7 +37,7 @@ body,
 
 @media (max-width: 899px) {
   .hero-ghost-title {
-    font-size: clamp(18px, 4.6vw, 24px);
+    font-size: clamp(17px, 4.4vw, 23px);
     white-space: normal;
     line-height: 1.25;
   }
