@@ -8,7 +8,7 @@ export const TERMINAL_POPUP_DATA = {
   details: [
     { label: 'name:', value: 'Code Craft' },
     { label: 'role:', value: 'Backend Developer' },
-    { label: 'focus:', value: 'Full-stack web, DevOps, AI' },
+    { label: 'focus:', value: 'Node.js, Express, DevOps, Security' },
     { label: 'site:', value: 'www.codecraftnet.com' },
     { label: 'status:', value: 'open for projects', isStatus: true }
   ]

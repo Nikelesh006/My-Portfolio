@@ -36,19 +36,32 @@ export default function TerminalWindow({
     );
   }, []);
 
-  const fullLine1 = 'need to know ?';
-  const linkPart1 = 'Code Craft';
-  const linkPart2 = ' www.codecraftnet.com';
-  const fullLine2 = linkPart1 + linkPart2; // 31 chars
+  // Commands and output text definitions
+  const cmd1 = 'cd codecraft';
+  const cmd2 = 'cat co-founder.txt';
+
+  const out1Prefix = 'Role: Co-founder & Backend Developer @ ';
+  const out1Link = 'Code Craft';
+  const out1Full = out1Prefix + out1Link;
+
+  const paragraphs = [
+    'With 1+ years of active experience, I have architected and shipped 5+ projects currently active in production. I specialize in engineering scalable custom backends, microservices, and high-throughput REST APIs built with Node.js, Express, Fastify, TypeScript, Next.js, and modern MERN architecture.',
+    'Deeply focused on security and resilience, I protect production systems from cyber attacks through strict API rate limiting, robust authentication, and defensive input sanitization.',
+    'I design and optimize PostgreSQL and MongoDB schemas alongside Supabase, Prisma, and Redis caching (cutting query latency by 45%), deploying containerized environments with Docker, Kubernetes, Jenkins, and automated GitHub Actions CI/CD to target 99.9% uptime.'
+  ];
+
+  const totalSteps = 6 + paragraphs.length;
 
   // Terminal Typing State Machine
   const isReduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   const [hasStarted, setHasStarted] = useState(isReduced);
-  const [activeLine, setActiveLine] = useState(isReduced ? 3 : 1);
-  const [line1Chars, setLine1Chars] = useState(isReduced ? fullLine1.length : 0);
-  const [showLine2, setShowLine2] = useState(isReduced);
-  const [line2Chars, setLine2Chars] = useState(isReduced ? fullLine2.length : 0);
-  const [showLine3, setShowLine3] = useState(isReduced);
+  const [activeStep, setActiveStep] = useState(isReduced ? totalSteps : 1);
+  const [cmd1Chars, setCmd1Chars] = useState(isReduced ? cmd1.length : 0);
+  const [cmd2Chars, setCmd2Chars] = useState(isReduced ? cmd2.length : 0);
+  const [out1Chars, setOut1Chars] = useState(isReduced ? out1Full.length : 0);
+  const [paraChars, setParaChars] = useState(() =>
+    isReduced ? paragraphs.map((p) => p.length) : paragraphs.map(() => 0)
+  );
   const [isTypingFinished, setIsTypingFinished] = useState(isReduced);
 
   // Popup Tooltip State
@@ -74,50 +87,98 @@ export default function TerminalWindow({
     return () => observer.disconnect();
   }, [hasStarted, isReduced]);
 
+  // Immediately finish typing helper
+  const finishTypingImmediately = useCallback(() => {
+    setIsTypingFinished(true);
+    setActiveStep(totalSteps);
+    setCmd1Chars(cmd1.length);
+    setCmd2Chars(cmd2.length);
+    setOut1Chars(out1Full.length);
+    setParaChars(paragraphs.map((p) => p.length));
+  }, [cmd1.length, cmd2.length, out1Full.length, paragraphs, totalSteps]);
+
   // 2. Typing sequence effect
   useEffect(() => {
     if (!hasStarted || checkReducedMotion() || isTypingFinished) return;
 
-    let timerId = null;
-    const getJitter = () => Math.floor(Math.random() * 20) + 25;
+    let timer = null;
+    const cmdJitter = () => Math.floor(Math.random() * 15) + 25; // 25-40ms
+    const textJitter = () => Math.floor(Math.random() * 6) + 10; // 10-16ms
 
-    if (activeLine === 1) {
-      if (line1Chars < fullLine1.length) {
-        timerId = setTimeout(() => {
-          setLine1Chars((prev) => prev + 1);
-        }, getJitter());
+    if (activeStep === 1) {
+      // Type cmd1: cd codecraft
+      if (cmd1Chars < cmd1.length) {
+        timer = setTimeout(() => setCmd1Chars((c) => c + 1), cmdJitter());
       } else {
-        // Line 1 complete: pause 300ms before starting Line 2
-        timerId = setTimeout(() => {
-          setShowLine2(true);
-          setActiveLine(2);
-        }, 300);
+        timer = setTimeout(() => setActiveStep(2), 250);
       }
-    } else if (activeLine === 2) {
-      if (line2Chars < fullLine2.length) {
-        timerId = setTimeout(() => {
-          setLine2Chars((prev) => prev + 1);
-        }, getJitter());
+    } else if (activeStep === 2) {
+      // Pause then start cmd2
+      timer = setTimeout(() => setActiveStep(3), 150);
+    } else if (activeStep === 3) {
+      // Type cmd2: cat co-founder.txt
+      if (cmd2Chars < cmd2.length) {
+        timer = setTimeout(() => setCmd2Chars((c) => c + 1), cmdJitter());
       } else {
-        // Line 2 complete: pause 200ms, then show Line 3
-        timerId = setTimeout(() => {
-          setShowLine3(true);
-          setActiveLine(3);
-          setIsTypingFinished(true);
-        }, 200);
+        timer = setTimeout(() => setActiveStep(4), 250);
+      }
+    } else if (activeStep === 4) {
+      // Pause before output starts
+      timer = setTimeout(() => setActiveStep(5), 180);
+    } else if (activeStep === 5) {
+      // Type out1 (Role & Code Craft link)
+      if (out1Chars < out1Full.length) {
+        timer = setTimeout(() => setOut1Chars((c) => c + 1), textJitter());
+      } else {
+        timer = setTimeout(() => setActiveStep(6), 140);
+      }
+    } else if (activeStep >= 6 && activeStep < totalSteps) {
+      // Dynamically type through each paragraph in paragraphs
+      const idx = activeStep - 6;
+      if (paraChars[idx] < paragraphs[idx].length) {
+        timer = setTimeout(() => {
+          setParaChars((prev) => {
+            const next = [...prev];
+            next[idx] = (next[idx] || 0) + 1;
+            return next;
+          });
+        }, textJitter());
+      } else {
+        const nextStep = activeStep + 1;
+        if (nextStep >= totalSteps) {
+          timer = setTimeout(() => {
+            setActiveStep(nextStep);
+            setIsTypingFinished(true);
+          }, 250);
+        } else {
+          timer = setTimeout(() => setActiveStep(nextStep), 160);
+        }
       }
     }
 
     return () => {
-      if (timerId) clearTimeout(timerId);
+      if (timer) clearTimeout(timer);
     };
-  }, [hasStarted, activeLine, line1Chars, line2Chars, fullLine1.length, fullLine2.length, isTypingFinished, checkReducedMotion]);
+  }, [
+    hasStarted,
+    checkReducedMotion,
+    isTypingFinished,
+    activeStep,
+    cmd1Chars,
+    cmd2Chars,
+    out1Chars,
+    paraChars,
+    cmd1.length,
+    cmd2.length,
+    out1Full.length,
+    paragraphs,
+    totalSteps
+  ]);
 
   // Check flip position based on link location relative to viewport
   const checkFlip = useCallback(() => {
     if (!wrapperRef.current) return;
     const rect = wrapperRef.current.getBoundingClientRect();
-    // If less than 240px from top of viewport, flip below the link
     setIsFlipped(rect.top < 240);
   }, []);
 
@@ -129,17 +190,13 @@ export default function TerminalWindow({
     }
     // If user hovers before typing has finished, instantly reveal the full text
     if (!isTypingFinished) {
-      setShowLine2(true);
-      setLine2Chars(fullLine2.length);
-      setShowLine3(true);
-      setActiveLine(3);
-      setIsTypingFinished(true);
+      finishTypingImmediately();
     }
     checkFlip();
     setIsOpen(true);
-  }, [checkFlip, isTypingFinished, fullLine2.length]);
+  }, [checkFlip, isTypingFinished, finishTypingImmediately]);
 
-  // Close Popup handler with hover-intent delay (200ms) to ensure smooth transition
+  // Close Popup handler with hover-intent delay (200ms)
   const closePopup = useCallback(() => {
     if (leaveTimerRef.current) {
       clearTimeout(leaveTimerRef.current);
@@ -191,18 +248,11 @@ export default function TerminalWindow({
     }
   };
 
-  // Render Line 2 output text
-  const renderedPart1 = fullLine2.slice(0, Math.min(line2Chars, linkPart1.length));
-  const renderedPart2 =
-    line2Chars > linkPart1.length
-      ? fullLine2.slice(linkPart1.length, line2Chars)
-      : '';
-
   return (
     <div ref={containerRef} className="terminal-root">
       {/* 1. Window Chrome Titlebar */}
       <div className="terminal-titlebar">
-        {/* Decorative Window Controls (12px dots with 8px gap) */}
+        {/* Decorative Window Controls */}
         <div className="terminal-dots" aria-hidden="true">
           <span className="terminal-dot bg-[#ff5f57]" />
           <span className="terminal-dot bg-[#febc2e]" />
@@ -222,102 +272,127 @@ export default function TerminalWindow({
 
       {/* 2. Terminal Body */}
       <div className="terminal-body">
-        {/* Line 1 */}
+        {/* Line 1: cd codecraft */}
         <div className="flex items-center flex-wrap">
           <span className="terminal-prompt">~/{user}&nbsp;$&nbsp;</span>
-          <span className="terminal-text">{fullLine1.slice(0, line1Chars)}</span>
-          {activeLine === 1 && <span className="terminal-caret" aria-hidden="true" />}
+          <span className="terminal-text">{cmd1.slice(0, cmd1Chars)}</span>
+          {activeStep === 1 && <span className="terminal-caret" aria-hidden="true" />}
         </div>
 
-        {/* Line 2 (Output with interactive link) */}
-        {showLine2 && (
+        {/* Line 2: cat co-founder.txt */}
+        {activeStep >= 2 && (
           <div className="flex items-center flex-wrap">
-            <span className="terminal-output-arrow">→&nbsp;</span>
-            <div
-              ref={wrapperRef}
-              className="terminal-link-wrapper"
-              onMouseEnter={openPopup}
-              onMouseMove={openPopup}
-              onMouseLeave={closePopup}
-            >
-              <a
-                ref={linkRef}
-                href="https://www.codecraftnet.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="terminal-link"
-                aria-describedby={isOpen ? 'terminal-popup-tooltip' : undefined}
-                onTouchStart={() => {
-                  isTouchDeviceRef.current = true;
-                }}
-                onFocus={openPopup}
-                onBlur={closePopup}
-                onClick={handleLinkClick}
-              >
-                <span>{renderedPart1}</span>
-                {renderedPart2 && (
-                  <span className="terminal-link-url">{renderedPart2}</span>
-                )}
-              </a>
-
-              {/* Hover Popup (Anchored directly inside wrapper) */}
-              {isOpen && (
-                <div
-                  ref={popupRef}
-                  id="terminal-popup-tooltip"
-                  role="tooltip"
-                  className={`terminal-popup ${isFlipped ? 'flipped' : ''}`}
-                  onMouseEnter={openPopup}
-                  onMouseLeave={closePopup}
-                >
-                  {/* Popup Mini Titlebar */}
-                  <div className="terminal-popup-titlebar">
-                    <div className="terminal-popup-dots" aria-hidden="true">
-                      <span className="terminal-popup-dot bg-[#ff5f57]" />
-                      <span className="terminal-popup-dot bg-[#febc2e]" />
-                      <span className="terminal-popup-dot bg-[#28c840]" />
-                    </div>
-                    <span className="font-mono text-white/50">{popupData.title}</span>
-                  </div>
-
-                  {/* Popup Body - All details text rendered and immediately visible */}
-                  <div className="terminal-popup-body">
-                    {/* Command Line */}
-                    <div className="terminal-popup-line text-white/80 pb-1.5 border-b border-white/[0.06] mb-2 font-mono">
-                      <span className="text-[#7c8cff] mr-1.5">$</span>
-                      <span>{popupData.command}</span>
-                    </div>
-
-                    {/* Details Lines */}
-                    <div className="flex flex-col gap-1 font-mono">
-                      {popupData.details.map((item) => (
-                        <div key={item.label} className="terminal-popup-line">
-                          <span className="terminal-popup-label">{item.label}</span>
-                          <span className="terminal-popup-value">
-                            {item.isStatus && <span className="terminal-status-dot" />}
-                            {item.value}
-                          </span>
-                        </div>
-                      ))}
-
-                      {/* Final line with blinking caret */}
-                      <div className="terminal-popup-line pt-0.5">
-                        <span className="terminal-caret" aria-hidden="true" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-            {activeLine === 2 && <span className="terminal-caret" aria-hidden="true" />}
+            <span className="terminal-prompt">~/{user}/codecraft&nbsp;$&nbsp;</span>
+            <span className="terminal-text">{cmd2.slice(0, cmd2Chars)}</span>
+            {activeStep === 3 && <span className="terminal-caret" aria-hidden="true" />}
           </div>
         )}
 
-        {/* Line 3 (Waiting prompt) */}
-        {showLine3 && (
-          <div className="flex items-center flex-wrap">
-            <span className="terminal-prompt">~/{user}&nbsp;$&nbsp;</span>
-            {activeLine === 3 && <span className="terminal-caret" aria-hidden="true" />}
+        {/* Experience Line 1: Role & Code Craft link */}
+        {activeStep >= 4 && (
+          <div className="flex items-center flex-wrap pt-1 text-xs sm:text-sm">
+            <span className="text-[#a5b4fc] font-semibold">
+              {out1Prefix.slice(0, Math.min(out1Chars, out1Prefix.length))}
+            </span>
+            {out1Chars > out1Prefix.length && (
+              <div
+                ref={wrapperRef}
+                className="terminal-link-wrapper inline-block"
+                onMouseEnter={openPopup}
+                onMouseMove={openPopup}
+                onMouseLeave={closePopup}
+              >
+                <a
+                  ref={linkRef}
+                  href="https://www.codecraftnet.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="terminal-link font-bold text-white hover:text-[#7c8cff]"
+                  aria-describedby={isOpen ? 'terminal-popup-tooltip' : undefined}
+                  onTouchStart={() => {
+                    isTouchDeviceRef.current = true;
+                  }}
+                  onFocus={openPopup}
+                  onBlur={closePopup}
+                  onClick={handleLinkClick}
+                >
+                  <span>{out1Link.slice(0, out1Chars - out1Prefix.length)}</span>
+                </a>
+
+                {/* Hover Popup */}
+                {isOpen && (
+                  <div
+                    ref={popupRef}
+                    id="terminal-popup-tooltip"
+                    role="tooltip"
+                    className={`terminal-popup ${isFlipped ? 'flipped' : ''}`}
+                    onMouseEnter={openPopup}
+                    onMouseLeave={closePopup}
+                  >
+                    {/* Popup Mini Titlebar */}
+                    <div className="terminal-popup-titlebar">
+                      <div className="terminal-popup-dots" aria-hidden="true">
+                        <span className="terminal-popup-dot bg-[#ff5f57]" />
+                        <span className="terminal-popup-dot bg-[#febc2e]" />
+                        <span className="terminal-popup-dot bg-[#28c840]" />
+                      </div>
+                      <span className="font-mono text-white/50">{popupData.title}</span>
+                    </div>
+
+                    {/* Popup Body */}
+                    <div className="terminal-popup-body">
+                      <div className="terminal-popup-line text-white/80 pb-1.5 border-b border-white/[0.06] mb-2 font-mono">
+                        <span className="text-[#7c8cff] mr-1.5">$</span>
+                        <span>{popupData.command}</span>
+                      </div>
+
+                      <div className="flex flex-col gap-1 font-mono">
+                        {popupData.details.map((item) => (
+                          <div key={item.label} className="terminal-popup-line">
+                            <span className="terminal-popup-label">{item.label}</span>
+                            <span className="terminal-popup-value">
+                              {item.isStatus && <span className="terminal-status-dot" />}
+                              {item.value}
+                            </span>
+                          </div>
+                        ))}
+
+                        <div className="terminal-popup-line pt-0.5">
+                          <span className="terminal-caret" aria-hidden="true" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            {activeStep === 5 && <span className="terminal-caret" aria-hidden="true" />}
+          </div>
+        )}
+
+        {/* Experience Paragraphs */}
+        {paragraphs.map((para, idx) => {
+          const stepForThisPara = 6 + idx;
+          if (activeStep < stepForThisPara) return null;
+          const typedChars = paraChars[idx] || 0;
+          const isCurrentlyActive = activeStep === stepForThisPara;
+
+          return (
+            <p
+              key={idx}
+              className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-mono mt-1"
+            >
+              <span>{para.slice(0, typedChars)}</span>
+              {isCurrentlyActive && <span className="terminal-caret" aria-hidden="true" />}
+            </p>
+          );
+        })}
+
+        {/* Final Line: Waiting prompt inside opened folder */}
+        {activeStep >= totalSteps && (
+          <div className="flex items-center flex-wrap pt-2">
+            <span className="terminal-prompt">~/{user}/codecraft&nbsp;$&nbsp;</span>
+            <span className="terminal-caret" aria-hidden="true" />
           </div>
         )}
       </div>

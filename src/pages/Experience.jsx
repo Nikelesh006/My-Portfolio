@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowUpRight, ArrowLeft, Mail, FileText, Menu, X, Terminal, Server, Database, Cloud, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { ArrowUpRight, ArrowLeft, Mail, FileText, Menu, X, Terminal } from 'lucide-react';
 import TerminalWindow from '../components/TerminalWindow';
 import { navigate, playClickSound } from '../lib/navigation';
 
@@ -248,43 +248,20 @@ export default function Experience() {
         </div>
       )}
 
-      {/* ================= 2. PAGE HEADER / HERO BANNER ================= */}
-      <section className="w-full max-w-5xl px-4 sm:px-6 md:px-10 pt-10 sm:pt-14 pb-10 flex flex-col items-start">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 font-mono text-[11px] sm:text-xs font-medium tracking-wide uppercase mb-4">
+      {/* ================= 2. OVERVIEW / HERO BANNER ================= */}
+      <section className="w-full max-w-5xl px-4 sm:px-6 md:px-10 pt-10 sm:pt-14 pb-8 flex flex-col items-start">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 font-mono text-[11px] sm:text-xs font-medium tracking-wide uppercase mb-3">
           <Terminal className="w-3.5 h-3.5 text-neutral-500" />
-          <span>Professional Experience &amp; Ventures</span>
+          <span>Professional Experience</span>
         </div>
 
-        {/* Title */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-900 leading-[1.15]">
-          Engineering Backend Systems &amp; Infrastructure
+          Backend Systems &amp; Infrastructure
         </h1>
 
-        {/* Description */}
-        <p className="mt-4 text-sm sm:text-base text-neutral-600 max-w-2xl leading-relaxed">
-          Specializing in designing high-throughput REST APIs, database performance optimization, automated CI/CD pipelines, and cloud architecture. Co-founder &amp; Backend Developer at Code Craft.
+        <p className="mt-3 text-sm sm:text-base text-neutral-600 max-w-2xl leading-relaxed">
+          Specializing in custom backend APIs, security hardening and rate limiting, database performance optimization, automated CI/CD pipelines, and cloud deployment. Co-founder &amp; Backend Developer at Code Craft.
         </p>
-
-        {/* Quick Stats Grid */}
-        <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-neutral-200/80">
-          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/70">
-            <span className="block font-mono text-2xl sm:text-3xl font-extrabold text-neutral-900">1+</span>
-            <span className="text-xs text-neutral-500 font-medium">Years Active Experience</span>
-          </div>
-          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/70">
-            <span className="block font-mono text-2xl sm:text-3xl font-extrabold text-neutral-900">10+</span>
-            <span className="text-xs text-neutral-500 font-medium">Production Endpoints &amp; APIs</span>
-          </div>
-          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/70">
-            <span className="block font-mono text-2xl sm:text-3xl font-extrabold text-neutral-900">99.9%</span>
-            <span className="text-xs text-neutral-500 font-medium">Reliability Target</span>
-          </div>
-          <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/70">
-            <span className="block font-mono text-2xl sm:text-3xl font-extrabold text-neutral-900">Code Craft</span>
-            <span className="text-xs text-neutral-500 font-medium">Co-founded Agency</span>
-          </div>
-        </div>
       </section>
 
       {/* ================= 3. INTERACTIVE TERMINAL SECTION ================= */}
@@ -302,7 +279,7 @@ export default function Experience() {
         </div>
 
         {/* The Animated Terminal Window Component */}
-        <div className="w-full shadow-2xl rounded-xl overflow-hidden">
+        <div className="w-full shadow-2xl rounded-xl">
           <TerminalWindow />
         </div>
 
@@ -311,180 +288,11 @@ export default function Experience() {
         </p>
       </section>
 
-      {/* ================= 4. DETAILED EXPERIENCE TIMELINE ================= */}
-      <section className="w-full max-w-4xl px-4 sm:px-6 md:px-10 py-12 flex flex-col gap-8">
-        <div className="flex items-center gap-2 border-b border-neutral-200/80 pb-4">
-          <Server className="w-4 h-4 text-neutral-700" />
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-neutral-900">
-            Roles &amp; Ventures
-          </h2>
-        </div>
-
-        {/* Role 1: Code Craft */}
-        <div className="relative pl-6 sm:pl-8 border-l-2 border-neutral-900 flex flex-col gap-3">
-          {/* Timeline Dot */}
-          <div className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-neutral-900 ring-4 ring-white" />
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-lg sm:text-xl font-bold text-neutral-900">
-                Backend Developer &amp; Co-founder
-              </h3>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
-                Present
-              </span>
-            </div>
-            <span className="text-xs font-mono text-neutral-500 font-medium">
-              2024 — Present
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-neutral-700">
-            <span>Code Craft</span>
-            <span className="text-neutral-400">•</span>
-            <a
-              href="https://www.codecraftnet.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-neutral-500 hover:text-black inline-flex items-center gap-1 transition-colors"
-            >
-              <span>codecraftnet.com</span>
-              <ArrowUpRight className="w-3 h-3" />
-            </a>
-          </div>
-
-          <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed pt-1">
-            Spearheaded backend architecture and system reliability across client projects and internal ventures. Responsible for defining database models, building resilient microservices, and setting up automated CI/CD delivery pipelines.
-          </p>
-
-          <ul className="flex flex-col gap-2 pt-2 text-xs sm:text-sm text-neutral-700">
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0 mt-0.5" />
-              <span>Architected scalable REST APIs in Node.js and Python with robust input validation, rate limiting, and structured logging.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0 mt-0.5" />
-              <span>Designed PostgreSQL schemas and integrated Redis caching layers to reduce database query execution times by up to 45%.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0 mt-0.5" />
-              <span>Configured Docker containerization and GitHub Actions CI/CD workflows for seamless multi-environment deployments.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-neutral-900 shrink-0 mt-0.5" />
-              <span>Implemented secure OAuth 2.0 / JWT authentication patterns and fine-grained role-based access control (RBAC).</span>
-            </li>
-          </ul>
-
-          <div className="flex flex-wrap gap-1.5 pt-3">
-            {['Node.js', 'Express', 'Python', 'PostgreSQL', 'Redis', 'Docker', 'CI/CD', 'AWS', 'REST APIs', 'System Design'].map((skill) => (
-              <span
-                key={skill}
-                className="px-2.5 py-1 rounded-lg bg-neutral-100 text-neutral-700 text-[11px] font-mono font-medium"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Role 2: Freelance & Full-Stack Projects */}
-        <div className="relative pl-6 sm:pl-8 border-l-2 border-neutral-300 flex flex-col gap-3">
-          {/* Timeline Dot */}
-          <div className="absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-neutral-400 ring-4 ring-white" />
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-            <h3 className="text-lg sm:text-xl font-bold text-neutral-900">
-              Full-Stack &amp; Backend Engineer
-            </h3>
-            <span className="text-xs font-mono text-neutral-500 font-medium">
-              2023 — 2024
-            </span>
-          </div>
-
-          <div className="text-xs sm:text-sm font-semibold text-neutral-700">
-            Independent / Client Solutions
-          </div>
-
-          <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed pt-1">
-            Delivered end-to-end web applications and bespoke API integrations for founders and businesses. Focused on reliable data persistence, security, and responsive UI integration.
-          </p>
-
-          <ul className="flex flex-col gap-2 pt-2 text-xs sm:text-sm text-neutral-700">
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-neutral-700 shrink-0 mt-0.5" />
-              <span>Built custom backend services with Express.js, MongoDB, and secure third-party webhook integrations.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-neutral-700 shrink-0 mt-0.5" />
-              <span>Developed high-performance frontend interfaces using modern React, Tailwind CSS, and optimized bundle configurations.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-neutral-700 shrink-0 mt-0.5" />
-              <span>Managed database migrations, schema indexing, and server deployment setups.</span>
-            </li>
-          </ul>
-
-          <div className="flex flex-wrap gap-1.5 pt-3">
-            {['TypeScript', 'JavaScript', 'React', 'Node.js', 'MongoDB', 'Git', 'Tailwind CSS'].map((skill) => (
-              <span
-                key={skill}
-                className="px-2.5 py-1 rounded-lg bg-neutral-100 text-neutral-700 text-[11px] font-mono font-medium"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ================= 5. TECHNICAL COMPETENCIES ================= */}
-      <section className="w-full max-w-4xl px-4 sm:px-6 md:px-10 py-10 flex flex-col gap-6">
-        <div className="flex items-center gap-2 border-b border-neutral-200/80 pb-4">
-          <ShieldCheck className="w-4 h-4 text-neutral-700" />
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-neutral-900">
-            Core Competencies
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="p-5 rounded-2xl bg-neutral-50/70 border border-neutral-200/80 flex flex-col gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-neutral-900 text-white flex items-center justify-center">
-              <Server className="w-4 h-4" />
-            </div>
-            <h4 className="font-bold text-sm text-neutral-900">Backend &amp; APIs</h4>
-            <p className="text-xs text-neutral-600 leading-relaxed">
-              Node.js, Express, Python, RESTful Architecture, GraphQL, Microservices, Async Queues, Authentication (JWT / OAuth2).
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-neutral-50/70 border border-neutral-200/80 flex flex-col gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-neutral-900 text-white flex items-center justify-center">
-              <Database className="w-4 h-4" />
-            </div>
-            <h4 className="font-bold text-sm text-neutral-900">Databases &amp; Caching</h4>
-            <p className="text-xs text-neutral-600 leading-relaxed">
-              PostgreSQL, Redis in-memory caching, MongoDB, Relational Schema Modeling, Query Profiling &amp; Indexing.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-neutral-50/70 border border-neutral-200/80 flex flex-col gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-neutral-900 text-white flex items-center justify-center">
-              <Cloud className="w-4 h-4" />
-            </div>
-            <h4 className="font-bold text-sm text-neutral-900">DevOps &amp; Cloud</h4>
-            <p className="text-xs text-neutral-600 leading-relaxed">
-              Docker containerization, GitHub Actions CI/CD workflows, Linux/Bash automation, AWS / Cloud hosting, reverse proxies.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ================= 6. BOTTOM CTA & FOOTER ================= */}
+      {/* ================= 4. BOTTOM CTA & FOOTER ================= */}
       <section className="w-full max-w-4xl px-4 sm:px-6 md:px-10 py-12">
-        <div className="p-8 sm:p-12 rounded-3xl bg-[#0a0a0a] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex flex-col gap-2 max-w-md">
-            <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+        <div className="p-8 sm:p-10 rounded-3xl bg-[#0a0a0a] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div className="flex flex-col gap-1.5 max-w-md">
+            <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight">
               Let's Build Something Resilient
             </h3>
             <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
@@ -495,15 +303,16 @@ export default function Experience() {
           <div className="flex items-center gap-3 shrink-0">
             <a
               href="mailto:nikelesh2006@gmail.com"
-              className="inline-flex items-center gap-1.5 px-6 py-3 rounded-full bg-white text-black font-bold text-xs sm:text-sm hover:bg-neutral-200 transition-colors shadow-lg"
+              onClick={playClickSound}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-white text-black font-bold text-xs sm:text-sm hover:bg-neutral-200 transition-colors shadow-lg"
             >
               <span>Get in touch</span>
-              <ArrowUpRight className="w-4 h-4" />
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
             <button
               type="button"
               onClick={() => navigate('/')}
-              className="inline-flex items-center gap-1.5 px-5 py-3 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs sm:text-sm transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs sm:text-sm transition-colors cursor-pointer"
             >
               <span>Home</span>
             </button>
@@ -511,7 +320,7 @@ export default function Experience() {
         </div>
 
         {/* Minimal Footer */}
-        <div className="mt-12 pt-6 border-t border-neutral-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 pb-10">
+        <div className="mt-10 pt-5 border-t border-neutral-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 pb-10">
           <p>© {new Date().getFullYear()} Nikeleshwaran T. All rights reserved.</p>
 
           <div className="flex items-center gap-4">
@@ -521,6 +330,7 @@ export default function Experience() {
                 href={item.href}
                 target={item.isExternal ? '_blank' : undefined}
                 rel={item.isExternal ? 'noopener noreferrer' : undefined}
+                onClick={playClickSound}
                 className="hover:text-black transition-colors"
               >
                 {item.name}
