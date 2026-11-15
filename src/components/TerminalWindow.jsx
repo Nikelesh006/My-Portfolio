@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { createPortal } from 'react-dom';
 import { TERMINAL_POPUP_DATA } from '../constants/terminalData';
 import './TerminalWindow.css';
 
@@ -9,6 +8,7 @@ export default function TerminalWindow({
   popupData = TERMINAL_POPUP_DATA
 }) {
   const containerRef = useRef(null);
+  const wrapperRef = useRef(null);
   const linkRef = useRef(null);
   const popupRef = useRef(null);
   const isTouchDeviceRef = useRef(false);
@@ -39,9 +39,9 @@ export default function TerminalWindow({
   const fullLine1 = 'need to know ?';
   const linkPart1 = 'Code Craft';
   const linkPart2 = ' www.codecraftnet.com';
-  const fullLine2 = linkPart1 + linkPart2; // 10 + 21 = 31 chars
+  const fullLine2 = linkPart1 + linkPart2; // 31 chars
 
-  // Terminal Typing State Machine (init with full text if reduced motion)
+  // Terminal Typing State Machine
   const isReduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   const [hasStarted, setHasStarted] = useState(isReduced);
   const [activeLine, setActiveLine] = useState(isReduced ? 3 : 1);
@@ -52,10 +52,8 @@ export default function TerminalWindow({
   const [isTypingFinished, setIsTypingFinished] = useState(isReduced);
 
   // Popup Tooltip State
-  const [isPopupMounted, setIsPopupMounted] = useState(false);
-  const [isPopupClosing, setIsPopupClosing] = useState(false);
-  const [popupPos, setPopupPos] = useState({ top: 0, left: 0, isFlipped: false });
-  const [revealedPopupLines, setRevealedPopupLines] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   // 1. Intersection Observer to trigger typing when scrolled into view
   useEffect(() => {
@@ -69,7 +67,7 @@ export default function TerminalWindow({
           observer.disconnect();
         }
       },
-      { threshold: 0.25 }
+      { threshold: 0.1, rootMargin: '60px' }
     );
 
     observer.observe(node);
@@ -78,12 +76,10 @@ export default function TerminalWindow({
 
   // 2. Typing sequence effect
   useEffect(() => {
-    if (!hasStarted || checkReducedMotion()) return;
+    if (!hasStarted || checkReducedMotion() || isTypingFinished) return;
 
     let timerId = null;
-
-    // Helper for random typing jitter (35ms - 60ms)
-    const getJitter = () => Math.floor(Math.random() * 26) + 35;
+    const getJitter = () => Math.floor(Math.random() * 20) + 25;
 
     if (activeLine === 1) {
       if (line1Chars < fullLine1.length) {
@@ -91,11 +87,11 @@ export default function TerminalWindow({
           setLine1Chars((prev) => prev + 1);
         }, getJitter());
       } else {
-        // Line 1 complete: pause 400ms before starting Line 2
+        // Line 1 complete: pause 300ms before starting Line 2
         timerId = setTimeout(() => {
           setShowLine2(true);
           setActiveLine(2);
-        }, 400);
+        }, 300);
       }
     } else if (activeLine === 2) {
       if (line2Chars < fullLine2.length) {
@@ -103,41 +99,26 @@ export default function TerminalWindow({
           setLine2Chars((prev) => prev + 1);
         }, getJitter());
       } else {
-        // Line 2 complete: pause 250ms, then show Line 3
+        // Line 2 complete: pause 200ms, then show Line 3
         timerId = setTimeout(() => {
           setShowLine3(true);
           setActiveLine(3);
           setIsTypingFinished(true);
-        }, 250);
+        }, 200);
       }
     }
 
     return () => {
       if (timerId) clearTimeout(timerId);
     };
-  }, [hasStarted, activeLine, line1Chars, line2Chars, fullLine1.length, fullLine2.length, checkReducedMotion]);
+  }, [hasStarted, activeLine, line1Chars, line2Chars, fullLine1.length, fullLine2.length, isTypingFinished, checkReducedMotion]);
 
-  // Measure and position the hover popup
-  const updatePopupPosition = useCallback(() => {
-    if (!linkRef.current) return;
-    const rect = linkRef.current.getBoundingClientRect();
-    const popupWidth = Math.min(320, window.innerWidth - 32);
-    const estimatedHeight = 220; // approximate popup height
-
-    // Center horizontally over the link, constrained to screen padding
-    let left = rect.left + rect.width / 2 - popupWidth / 2;
-    left = Math.max(16, Math.min(left, window.innerWidth - popupWidth - 16));
-
-    // Default above; flip below if insufficient room above
-    let top = rect.top - estimatedHeight - 12;
-    let isFlipped = false;
-
-    if (top < 16) {
-      top = rect.bottom + 12;
-      isFlipped = true;
-    }
-
-    setPopupPos({ top, left, isFlipped });
+  // Check flip position based on link location relative to viewport
+  const checkFlip = useCallback(() => {
+    if (!wrapperRef.current) return;
+    const rect = wrapperRef.current.getBoundingClientRect();
+    // If less than 240px from top of viewport, flip below the link
+    setIsFlipped(rect.top < 240);
   }, []);
 
   // Open Popup handler
@@ -146,76 +127,65 @@ export default function TerminalWindow({
       clearTimeout(leaveTimerRef.current);
       leaveTimerRef.current = null;
     }
-    updatePopupPosition();
-    const isReduced = checkReducedMotion();
-    setRevealedPopupLines(isReduced ? popupData.details.length + 2 : 0);
-    setIsPopupClosing(false);
-    setIsPopupMounted(true);
-  }, [updatePopupPosition, checkReducedMotion, popupData.details.length]);
+    // If user hovers before typing has finished, instantly reveal the full text
+    if (!isTypingFinished) {
+      setShowLine2(true);
+      setLine2Chars(fullLine2.length);
+      setShowLine3(true);
+      setActiveLine(3);
+      setIsTypingFinished(true);
+    }
+    checkFlip();
+    setIsOpen(true);
+  }, [checkFlip, isTypingFinished, fullLine2.length]);
 
-  // Close Popup handler with hover-intent delay
+  // Close Popup handler with hover-intent delay (200ms) to ensure smooth transition
   const closePopup = useCallback(() => {
     if (leaveTimerRef.current) {
       clearTimeout(leaveTimerRef.current);
     }
     leaveTimerRef.current = setTimeout(() => {
-      setIsPopupClosing(true);
-      setTimeout(() => {
-        setIsPopupMounted(false);
-        setIsPopupClosing(false);
-        setRevealedPopupLines(0);
-      }, 120);
-    }, 100);
+      setIsOpen(false);
+    }, 200);
   }, []);
 
-  // Popup line-by-line staggered reveal
+  // Update flip state on window scroll or resize
   useEffect(() => {
-    if (!isPopupMounted || isPopupClosing || checkReducedMotion()) return;
-
-    const totalLines = popupData.details.length + 1; // command line + details
-    let current = 0;
-    const interval = setInterval(() => {
-      current += 1;
-      setRevealedPopupLines(current);
-      if (current >= totalLines) {
-        clearInterval(interval);
-      }
-    }, 60);
-
-    return () => clearInterval(interval);
-  }, [isPopupMounted, isPopupClosing, popupData.details.length, checkReducedMotion]);
-
-  // Window resize / scroll position updates
-  useEffect(() => {
-    if (!isPopupMounted) return;
-    const handleScrollOrResize = () => updatePopupPosition();
+    if (!isOpen) return;
+    const handleScrollOrResize = () => checkFlip();
     window.addEventListener('resize', handleScrollOrResize, { passive: true });
-    window.addEventListener('scroll', handleScrollOrResize, { passive: true });
+    window.addEventListener('scroll', handleScrollOrResize, { passive: true, capture: true });
     return () => {
       window.removeEventListener('resize', handleScrollOrResize);
-      window.removeEventListener('scroll', handleScrollOrResize);
+      window.removeEventListener('scroll', handleScrollOrResize, { capture: true });
     };
-  }, [isPopupMounted, updatePopupPosition]);
+  }, [isOpen, checkFlip]);
 
-  // Escape key closes popup
+  // Escape key and outside click closes popup
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isPopupMounted) {
-        setIsPopupMounted(false);
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setIsOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPopupMounted]);
+    document.addEventListener('touchstart', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
-  // Link click handler (two-tap for touch devices)
+  // Link click handler (two-tap on touch devices)
   const handleLinkClick = (e) => {
-    if (!isTypingFinished) {
-      e.preventDefault();
-      return;
-    }
-
-    if (isTouchDeviceRef.current && !isPopupMounted) {
+    if (isTouchDeviceRef.current && !isOpen) {
       e.preventDefault();
       openPopup();
     }
@@ -263,33 +233,25 @@ export default function TerminalWindow({
         {showLine2 && (
           <div className="flex items-center flex-wrap">
             <span className="terminal-output-arrow">→&nbsp;</span>
-            <div className="terminal-link-wrapper">
+            <div
+              ref={wrapperRef}
+              className="terminal-link-wrapper"
+              onMouseEnter={openPopup}
+              onMouseMove={openPopup}
+              onMouseLeave={closePopup}
+            >
               <a
                 ref={linkRef}
                 href="https://www.codecraftnet.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="terminal-link"
-                style={{
-                  pointerEvents: isTypingFinished ? 'auto' : 'none',
-                  cursor: isTypingFinished ? 'pointer' : 'default'
-                }}
-                aria-describedby={isPopupMounted ? 'terminal-popup-tooltip' : undefined}
+                aria-describedby={isOpen ? 'terminal-popup-tooltip' : undefined}
                 onTouchStart={() => {
                   isTouchDeviceRef.current = true;
                 }}
-                onMouseEnter={() => {
-                  if (isTypingFinished) openPopup();
-                }}
-                onMouseLeave={() => {
-                  if (isTypingFinished) closePopup();
-                }}
-                onFocus={() => {
-                  if (isTypingFinished) openPopup();
-                }}
-                onBlur={() => {
-                  if (isTypingFinished) closePopup();
-                }}
+                onFocus={openPopup}
+                onBlur={closePopup}
                 onClick={handleLinkClick}
               >
                 <span>{renderedPart1}</span>
@@ -297,6 +259,55 @@ export default function TerminalWindow({
                   <span className="terminal-link-url">{renderedPart2}</span>
                 )}
               </a>
+
+              {/* Hover Popup (Anchored directly inside wrapper) */}
+              {isOpen && (
+                <div
+                  ref={popupRef}
+                  id="terminal-popup-tooltip"
+                  role="tooltip"
+                  className={`terminal-popup ${isFlipped ? 'flipped' : ''}`}
+                  onMouseEnter={openPopup}
+                  onMouseLeave={closePopup}
+                >
+                  {/* Popup Mini Titlebar */}
+                  <div className="terminal-popup-titlebar">
+                    <div className="terminal-popup-dots" aria-hidden="true">
+                      <span className="terminal-popup-dot bg-[#ff5f57]" />
+                      <span className="terminal-popup-dot bg-[#febc2e]" />
+                      <span className="terminal-popup-dot bg-[#28c840]" />
+                    </div>
+                    <span className="font-mono text-white/50">{popupData.title}</span>
+                  </div>
+
+                  {/* Popup Body - All details text rendered and immediately visible */}
+                  <div className="terminal-popup-body">
+                    {/* Command Line */}
+                    <div className="terminal-popup-line text-white/80 pb-1.5 border-b border-white/[0.06] mb-2 font-mono">
+                      <span className="text-[#7c8cff] mr-1.5">$</span>
+                      <span>{popupData.command}</span>
+                    </div>
+
+                    {/* Details Lines */}
+                    <div className="flex flex-col gap-1 font-mono">
+                      {popupData.details.map((item) => (
+                        <div key={item.label} className="terminal-popup-line">
+                          <span className="terminal-popup-label">{item.label}</span>
+                          <span className="terminal-popup-value">
+                            {item.isStatus && <span className="terminal-status-dot" />}
+                            {item.value}
+                          </span>
+                        </div>
+                      ))}
+
+                      {/* Final line with blinking caret */}
+                      <div className="terminal-popup-line pt-0.5">
+                        <span className="terminal-caret" aria-hidden="true" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             {activeLine === 2 && <span className="terminal-caret" aria-hidden="true" />}
           </div>
@@ -310,73 +321,6 @@ export default function TerminalWindow({
           </div>
         )}
       </div>
-
-      {/* 3. Hover Popup Portal (Mounted to document.body) */}
-      {isPopupMounted &&
-        typeof document !== 'undefined' &&
-        createPortal(
-          <div
-            ref={popupRef}
-            id="terminal-popup-tooltip"
-            role="tooltip"
-            className={`terminal-popup-portal ${popupPos.isFlipped ? 'flipped' : ''} ${
-              isPopupClosing ? 'closing' : ''
-            }`}
-            style={{
-              top: `${popupPos.top}px`,
-              left: `${popupPos.left}px`
-            }}
-            onMouseEnter={openPopup}
-            onMouseLeave={closePopup}
-          >
-            {/* Popup Mini Titlebar */}
-            <div className="terminal-popup-titlebar">
-              <div className="terminal-popup-dots" aria-hidden="true">
-                <span className="terminal-popup-dot bg-[#ff5f57]" />
-                <span className="terminal-popup-dot bg-[#febc2e]" />
-                <span className="terminal-popup-dot bg-[#28c840]" />
-              </div>
-              <span className="font-mono text-white/50">{popupData.title}</span>
-            </div>
-
-            {/* Popup Body */}
-            <div className="terminal-popup-body">
-              {/* Command Line */}
-              {revealedPopupLines >= 1 && (
-                <div className="terminal-popup-line text-white/80 pb-1.5 border-b border-white/[0.06] mb-2 font-mono">
-                  <span className="text-[#7c8cff] mr-1.5">$</span>
-                  <span>{popupData.command}</span>
-                </div>
-              )}
-
-              {/* Details Lines */}
-              <div className="flex flex-col gap-1 font-mono">
-                {popupData.details.map((item, idx) => {
-                  const lineNum = idx + 2;
-                  if (revealedPopupLines < lineNum) return null;
-
-                  return (
-                    <div key={item.label} className="terminal-popup-line">
-                      <span className="terminal-popup-label">{item.label}</span>
-                      <span className="terminal-popup-value">
-                        {item.isStatus && <span className="terminal-status-dot" />}
-                        {item.value}
-                      </span>
-                    </div>
-                  );
-                })}
-
-                {/* Final line with blinking caret */}
-                {revealedPopupLines >= popupData.details.length + 1 && (
-                  <div className="terminal-popup-line pt-0.5">
-                    <span className="terminal-caret" aria-hidden="true" />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>,
-          document.body
-        )}
     </div>
   );
 }

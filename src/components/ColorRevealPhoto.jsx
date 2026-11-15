@@ -21,6 +21,10 @@ export default function ColorRevealPhoto({
   const targetRRef = useRef(0);
   const rafIdRef = useRef(null);
   const touchActiveRef = useRef(false);
+  const isInsideRef = useRef(false);
+  const lastMoveTimeRef = useRef(0);
+  const lastPosRef = useRef({ x: null, y: null });
+  const stillStartRef = useRef(0);
 
   // State for fade mode
   const [isInsideFade, setIsInsideFade] = useState(false);
@@ -38,11 +42,55 @@ export default function ColorRevealPhoto({
       return (imgRef.current || wrapperRef.current)?.getBoundingClientRect();
     };
 
-    const animate = () => {
-      const lerp = 0.15;
-      curXRef.current += (targetXRef.current - curXRef.current) * lerp;
-      curYRef.current += (targetYRef.current - curYRef.current) * lerp;
-      curRRef.current += (targetRRef.current - curRRef.current) * lerp;
+    const animate = (time) => {
+      const now = performance.now();
+      const rect = getPhotoRect();
+      const baseR = rect?.width ? Math.min(radius, Math.max(90, rect.width * 0.22)) : radius;
+      const maxR = rect ? Math.hypot(rect.width, rect.height) * 1.6 : 1400;
+
+      if (isInsideRef.current) {
+        const timeSinceMove = (now - lastMoveTimeRef.current) / 1000;
+        // Cursor is held still when stationary on the image for >= 250ms
+        const isStill = timeSinceMove >= 1.25;
+
+        if (isStill) {
+          // Cursor is kept still on the image -> bloom very slowly and gracefully to full image
+          if (!stillStartRef.current) {
+            stillStartRef.current = now;
+          }
+          const stillElapsed = (now - stillStartRef.current) / 1000;
+          // Ultra-smooth, slow reveal over ~4.8 seconds
+          const expandDuration = 4.8;
+          const progress = Math.min(1, Math.max(0, stillElapsed / expandDuration));
+          // Smoothstep easing: gentle start, steady middle, gentle finish (no abrupt burst)
+          const ease = progress * progress * (3 - 2 * progress);
+          targetRRef.current = baseR + (maxR - baseR) * ease;
+        } else {
+          // Cursor is moving on the hero image -> previous logic: spotlight only
+          stillStartRef.current = 0;
+          targetRRef.current = baseR;
+        }
+      } else {
+        stillStartRef.current = 0;
+        targetRRef.current = 0;
+      }
+
+      // Smooth interpolation:
+      // When contracting back to base spotlight during movement: responsive lerp
+      // When blooming slowly: very gentle lerp (0.05) to eliminate any rushing
+      let lerpR;
+      if (!isInsideRef.current) {
+        lerpR = 0.15;
+      } else if (targetRRef.current < curRRef.current) {
+        lerpR = 0.12;
+      } else {
+        lerpR = 0.05;
+      }
+
+      const lerpPos = 0.15;
+      curXRef.current += (targetXRef.current - curXRef.current) * lerpPos;
+      curYRef.current += (targetYRef.current - curYRef.current) * lerpPos;
+      curRRef.current += (targetRRef.current - curRRef.current) * lerpR;
 
       const targetEl = colorImgRef.current;
       if (targetEl) {
@@ -51,8 +99,8 @@ export default function ColorRevealPhoto({
         targetEl.style.setProperty('--r', `${curRRef.current.toFixed(1)}px`);
       }
 
-      // Stop condition: target radius is 0 and current radius has shrunk to nearly 0
-      if (targetRRef.current === 0 && curRRef.current < 0.5) {
+      // Stop condition: cursor left and circle has collapsed back to 0
+      if (!isInsideRef.current && curRRef.current < 0.5) {
         curRRef.current = 0;
         if (targetEl) {
           targetEl.style.setProperty('--r', '0px');
@@ -97,27 +145,40 @@ export default function ColorRevealPhoto({
       }
 
       if (isInside) {
+        const now = performance.now();
         const relX = clientX - rect.left;
         const relY = clientY - rect.top;
 
-        // If circle was completely closed, jump current position to cursor entrance
-        if (curRRef.current < 1) {
-          curXRef.current = relX;
-          curYRef.current = relY;
+        // Calculate distance moved to filter out subpixel jitter (< 2.5px)
+        const prevX = lastPosRef.current.x ?? clientX;
+        const prevY = lastPosRef.current.y ?? clientY;
+        const dist = Math.hypot(clientX - prevX, clientY - prevY);
+
+        if (!isInsideRef.current || dist >= 2.5) {
+          lastMoveTimeRef.current = now;
+          lastPosRef.current = { x: clientX, y: clientY };
+          stillStartRef.current = 0;
+        }
+
+        if (!isInsideRef.current) {
+          isInsideRef.current = true;
+          // If circle was completely closed, jump current position to cursor entrance
+          if (curRRef.current < 1) {
+            curXRef.current = relX;
+            curYRef.current = relY;
+          }
         }
 
         targetXRef.current = relX;
         targetYRef.current = relY;
 
-        // Reveal radius scaled to roughly 18%-24% of photo's width (max default radius)
-        const computedRadius = rect.width ? Math.min(radius, Math.max(90, rect.width * 0.22)) : radius;
-        targetRRef.current = computedRadius;
         startLoop();
       } else {
-        if (targetRRef.current !== 0) {
-          targetRRef.current = 0;
-          startLoop();
-        }
+        isInsideRef.current = false;
+        lastPosRef.current = { x: null, y: null };
+        stillStartRef.current = 0;
+        targetRRef.current = 0;
+        startLoop();
       }
     };
 
@@ -136,6 +197,9 @@ export default function ColorRevealPhoto({
     const onPointerUp = (e) => {
       if (e.pointerType === 'touch') {
         touchActiveRef.current = false;
+        isInsideRef.current = false;
+        lastPosRef.current = { x: null, y: null };
+        stillStartRef.current = 0;
         if (mode === 'fade') {
           setIsInsideFade(false);
         } else {
@@ -146,6 +210,9 @@ export default function ColorRevealPhoto({
     };
 
     const onPointerLeave = () => {
+      isInsideRef.current = false;
+      lastPosRef.current = { x: null, y: null };
+      stillStartRef.current = 0;
       if (mode === 'fade') {
         setIsInsideFade(false);
       } else {

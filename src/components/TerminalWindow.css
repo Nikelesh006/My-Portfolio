@@ -96,7 +96,7 @@
   }
 }
 
-/* Link */
+/* Link Wrapper & Popup */
 .terminal-link-wrapper {
   position: relative;
   display: inline-block;
@@ -109,6 +109,8 @@
   padding-bottom: 1px;
   transition: color 0.15s ease, border-color 0.15s ease;
   outline: none;
+  cursor: pointer;
+  pointer-events: auto;
 }
 
 .terminal-link:hover,
@@ -134,27 +136,45 @@
   color: #c4c8d4;
 }
 
-/* Popup Tooltip */
-.terminal-popup-portal {
-  position: fixed;
-  z-index: 99999;
+/* Hover Popup */
+.terminal-popup {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  width: min(320px, calc(100vw - 48px));
   background-color: #050507;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.06);
-  width: min(320px, calc(100vw - 32px));
+  z-index: 50;
   pointer-events: auto;
-  transform-origin: center bottom;
+  transform-origin: left bottom;
   animation: terminalPopupIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.terminal-popup-portal.flipped {
-  transform-origin: center top;
+/* Invisible bridge element bridging the 12px gap between the link and the popup */
+.terminal-popup::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -16px;
+  height: 16px;
+  background: transparent;
 }
 
-.terminal-popup-portal.closing {
-  animation: terminalPopupOut 0.12s ease-in forwards;
+/* Flipped state (when near top of screen) */
+.terminal-popup.flipped {
+  bottom: auto;
+  top: calc(100% + 12px);
+  transform-origin: left top;
+}
+
+.terminal-popup.flipped::after {
+  bottom: auto;
+  top: -16px;
+  height: 16px;
 }
 
 @keyframes terminalPopupIn {
@@ -168,17 +188,6 @@
   }
 }
 
-@keyframes terminalPopupOut {
-  from {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.96) translateY(4px);
-  }
-}
-
 .terminal-popup-titlebar {
   display: flex;
   align-items: center;
@@ -187,6 +196,7 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 11px;
   color: rgba(255, 255, 255, 0.45);
+  user-select: none;
 }
 
 .terminal-popup-dots {

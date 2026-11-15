@@ -4,6 +4,7 @@ import TechText from '../components/TechText';
 import GhostType from '../components/GhostType';
 import ColorRevealPhoto from '../components/ColorRevealPhoto';
 import TerminalWindow from '../components/TerminalWindow';
+import SplashCursor from '../components/SplashCursor';
 import mePhoto from '../assets/me.png';
 
 function GithubIcon(props) {
@@ -71,8 +72,32 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [mobileMenuOpen]);
 
-  // Scroll to hash target on mount if present
+  // Handle external auth errors in URL query params (e.g. ?error=auth_failed) and clean up address bar
+  const [authError, setAuthError] = useState(null);
+
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get('error');
+    if (err) {
+      setAuthError(
+        err === 'auth_failed'
+          ? 'Authentication failed. Please verify your credentials or login provider.'
+          : `Authentication error: ${err}`
+      );
+      // Clean query parameter from URL bar without refreshing
+      const cleanUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, '', cleanUrl);
+
+      // Auto dismiss after 6 seconds
+      const timer = setTimeout(() => setAuthError(null), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // Scroll to hash target on mount if present, or start at top if no hash
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     const hash = window.location.hash;
     if (hash) {
       const scrollToHash = () => {
@@ -87,7 +112,38 @@ export default function Home() {
         clearTimeout(t1);
         clearTimeout(t2);
       };
+    } else {
+      window.scrollTo(0, 0);
     }
+  }, []);
+
+  // Check if fluid SplashCursor should be active (skip on prefers-reduced-motion or < 640px)
+  const [shouldRenderSplash, setShouldRenderSplash] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isNarrow = window.innerWidth < 640;
+    return !prefersReduced && !isNarrow;
+  });
+
+  useEffect(() => {
+    const checkSplash = () => {
+      if (typeof window === 'undefined') return false;
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const isNarrow = window.innerWidth < 640;
+      return !prefersReduced && !isNarrow;
+    };
+
+    const handleResize = () => setShouldRenderSplash(checkSplash());
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const handleMotionChange = () => setShouldRenderSplash(checkSplash());
+
+    window.addEventListener('resize', handleResize);
+    motionQuery.addEventListener('change', handleMotionChange);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      motionQuery.removeEventListener('change', handleMotionChange);
+    };
   }, []);
 
   const socialLinks = [
@@ -124,6 +180,23 @@ export default function Home() {
         backgroundColor: 'var(--frame-bg, #ffffff)'
       }}
     >
+      {/* Auth Error Notification Toast */}
+      {authError && (
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] max-w-md w-[calc(100%-32px)] bg-neutral-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-neutral-700/80 flex items-center justify-between gap-3 text-xs sm:text-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 animate-pulse" />
+            <span className="font-medium text-neutral-200">{authError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setAuthError(null)}
+            className="text-neutral-400 hover:text-white transition-colors p-1"
+            aria-label="Dismiss notification"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
       {/* Full Viewport Canvas Card (governed by --frame) */}
       <div
         ref={cardRef}
@@ -136,8 +209,27 @@ export default function Home() {
           minHeight: 'calc(100vh - (var(--frame, 0px) * 2))'
         }}
       >
+        {/* Fluid Glassy Silver Splash Cursor (contained in hero) */}
+        {shouldRenderSplash && (
+          <SplashCursor
+            theme="light"
+            contained
+            rainbow={false}
+            colors={['#ffffff', '#f8fafc', '#edf2f7', '#e2e8f0', '#cbd5e1']}
+            size={1.7}
+            force={0.42}
+            swirl={0.38}
+            trail={2.0}
+            clickSplash
+            intensity={0.42}
+            momentum={1.8}
+            quality="medium"
+            zIndex={30}
+          />
+        )}
+
         {/* ================= 1. TOP NAVBAR REGION ================= */}
-        <header className="relative z-30 w-full max-w-full px-4 py-3 sm:px-6 sm:py-4 md:px-10 md:py-5 flex items-center justify-between border-b border-neutral-100 shrink-0">
+        <header className="relative z-40 w-full max-w-full px-4 py-3 sm:px-6 sm:py-4 md:px-10 md:py-5 flex items-center justify-between border-b border-neutral-100 shrink-0">
           {/* Left: Availability Pill */}
           <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white border border-neutral-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.03)] text-[11px] sm:text-xs font-semibold text-neutral-800 shrink-0">
             <span className="relative flex h-2 w-2">
@@ -327,11 +419,12 @@ export default function Home() {
               <GhostType
                 as="h2"
                 className="hero-ghost-title"
-                text="Co-founder of Code Craft"
+                text="Backend Developer"
                 completions={[
-                  ', Full Stack Developer',
                   ', DevOps Engineer',
-                  ', AI Architect'
+                  ', Cloud Architect',
+                  ', AI Architect',
+                  ', Full Stack Engineer'
                 ]}
                 fontWeight={600}
                 textColor="#0a0a0a"
