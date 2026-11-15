@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowLeft, Mail, FileText, Menu, X, Terminal, Server, Database, Cloud, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import TerminalWindow from '../components/TerminalWindow';
-import { navigate } from '../lib/navigation';
+import { navigate, playClickSound } from '../lib/navigation';
 
 function GithubIcon(props) {
   return (
@@ -134,16 +134,21 @@ export default function Experience() {
           >
             Home
           </button>
-          <span className="text-black font-bold flex items-center gap-1 border-b-2 border-black pb-0.5">
+          <button
+            type="button"
+            onClick={() => handleNavClick('/experience')}
+            className="text-black font-bold flex items-center gap-1 border-b-2 border-black pb-0.5 cursor-pointer"
+          >
             <span>Experience</span>
             <span className="text-[10px] text-neutral-500 font-mono font-normal">[1+]</span>
-          </span>
+          </button>
         </nav>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 shrink-0">
           <a
             href="mailto:nikelesh2006@gmail.com"
+            onClick={playClickSound}
             className="inline-flex items-center gap-1 px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full bg-[#0a0a0a] text-white text-[11px] sm:text-xs font-semibold hover:bg-neutral-800 transition-all shadow-xs shrink-0"
           >
             <span>Let's Talk</span>
@@ -153,7 +158,10 @@ export default function Experience() {
           {/* Mobile Menu Button (< 900px) */}
           <button
             type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => {
+              playClickSound();
+              setMobileMenuOpen(!mobileMenuOpen);
+            }}
             className="min-[900px]:hidden flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 transition-colors shrink-0"
             aria-label="Toggle navigation menu"
           >
@@ -171,7 +179,10 @@ export default function Experience() {
             </span>
             <button
               type="button"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => {
+                playClickSound();
+                setMobileMenuOpen(false);
+              }}
               className="flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors"
               aria-label="Close menu"
             >
@@ -205,7 +216,10 @@ export default function Experience() {
           <div className="flex flex-col gap-4 border-t border-neutral-100 pt-5">
             <a
               href="mailto:nikelesh2006@gmail.com"
-              onClick={() => setMobileMenuOpen(false)}
+              onClick={() => {
+                playClickSound();
+                setMobileMenuOpen(false);
+              }}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-[#0a0a0a] text-white font-semibold text-sm hover:bg-neutral-800 transition-all shadow-xs"
             >
               <span>Let's Talk</span>
