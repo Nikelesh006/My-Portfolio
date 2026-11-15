@@ -3,8 +3,8 @@ import { ArrowUpRight, Mail, FileText, Menu, X } from 'lucide-react';
 import TechText from '../components/TechText';
 import GhostType from '../components/GhostType';
 import ColorRevealPhoto from '../components/ColorRevealPhoto';
-import TerminalWindow from '../components/TerminalWindow';
 import SplashCursor from '../components/SplashCursor';
+import { navigate } from '../lib/navigation';
 import mePhoto from '../assets/me.png';
 
 function GithubIcon(props) {
@@ -200,12 +200,11 @@ export default function Home() {
       {/* Full Viewport Canvas Card (governed by --frame) */}
       <div
         ref={cardRef}
-        className="relative bg-white flex flex-col justify-between overflow-x-hidden overflow-y-auto min-[900px]:overflow-hidden transition-all duration-300 shrink-0"
+        className="relative bg-white flex flex-col justify-between overflow-x-hidden transition-all duration-300 w-full"
         style={{
           margin: 'var(--frame, 0px)',
           borderRadius: 'var(--frame, 0px)',
           width: 'calc(100% - (var(--frame, 0px) * 2))',
-          height: 'calc(100dvh - (var(--frame, 0px) * 2))',
           minHeight: 'calc(100vh - (var(--frame, 0px) * 2))'
         }}
       >
@@ -230,39 +229,33 @@ export default function Home() {
 
         {/* ================= 1. TOP NAVBAR REGION ================= */}
         <header className="relative z-40 w-full max-w-full px-4 py-3 sm:px-6 sm:py-4 md:px-10 md:py-5 flex items-center justify-between border-b border-neutral-100 shrink-0">
-          {/* Left: Availability Pill */}
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white border border-neutral-200/90 shadow-[0_2px_8px_rgba(0,0,0,0.03)] text-[11px] sm:text-xs font-semibold text-neutral-800 shrink-0">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          {/* Left: Brand / Logo */}
+          <div className="flex items-center">
+            <span className="text-xs sm:text-sm font-bold tracking-wider uppercase text-neutral-900 select-none">
+              Nikel
             </span>
-            <span>Available<span className="hidden sm:inline"> for new projects</span></span>
           </div>
 
           {/* Center: Nav Links (Desktop >= 900px) */}
           <nav className="hidden min-[900px]:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-neutral-600">
-            <a href="#work" className="hover:text-black transition-colors flex items-center gap-1">
-              <span>Work</span>
-              <span className="text-[10px] text-neutral-400 font-mono font-normal">[4]</span>
-            </a>
-            <a href="#services" className="hover:text-black transition-colors flex items-center gap-1">
-              <span>Services</span>
-              <span className="text-[10px] text-neutral-400 font-mono font-normal">[3]</span>
-            </a>
-            <a href="#experience" className="hover:text-black transition-colors flex items-center gap-1">
+            <span className="text-black font-bold border-b-2 border-black pb-0.5">
+              Home
+            </span>
+            <button
+              type="button"
+              onClick={() => navigate('/experience')}
+              className="hover:text-black transition-colors flex items-center gap-1 cursor-pointer"
+            >
               <span>Experience</span>
               <span className="text-[10px] text-neutral-400 font-mono font-normal">[1+]</span>
-            </a>
-            <a href="#contact" className="hover:text-black transition-colors">
-              Contact
-            </a>
+            </button>
           </nav>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2 shrink-0">
             {/* Let's Talk CTA */}
             <a
-              href="#contact"
+              href="mailto:nikelesh2006@gmail.com"
               className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-[11px] sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs shrink-0"
             >
               <span>Let's Talk</span>
@@ -286,13 +279,9 @@ export default function Home() {
           <div className="min-[900px]:hidden fixed inset-0 z-50 flex flex-col justify-between bg-white/95 backdrop-blur-xl p-6 transition-all duration-300">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-neutral-200/90 shadow-xs text-xs font-semibold text-neutral-800">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span>Available for new projects</span>
-              </div>
+              <span className="text-xs font-bold tracking-wider uppercase text-neutral-900">
+                Menu
+              </span>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
@@ -306,16 +295,19 @@ export default function Home() {
             {/* Nav Links */}
             <nav className="flex flex-col gap-5 py-6">
               {[
-                { label: 'Work', href: '#work', count: '4' },
-                { label: 'Services', href: '#services', count: '3' },
-                { label: 'Experience', href: '#experience', count: '1+' },
-                { label: 'Contact', href: '#contact' }
+                { label: 'Home', href: '/', active: true },
+                { label: 'Experience', href: '/experience', count: '1+' }
               ].map((item) => (
-                <a
+                <button
                   key={item.label}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-between text-2xl font-bold tracking-tight text-neutral-900 hover:text-neutral-500 transition-colors"
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate(item.href);
+                  }}
+                  className={`flex items-center justify-between text-2xl font-bold tracking-tight text-left transition-colors ${
+                    item.active ? 'text-black' : 'text-neutral-500 hover:text-black'
+                  }`}
                 >
                   <span>{item.label}</span>
                   {item.count ? (
@@ -323,14 +315,14 @@ export default function Home() {
                   ) : (
                     <ArrowUpRight className="w-5 h-5 text-neutral-400" />
                   )}
-                </a>
+                </button>
               ))}
             </nav>
 
             {/* Modal Footer / CTAs & Socials */}
             <div className="flex flex-col gap-4 border-t border-neutral-100 pt-5">
               <a
-                href="#contact"
+                href="mailto:nikelesh2006@gmail.com"
                 onClick={() => setMobileMenuOpen(false)}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-[#0a0a0a] text-white font-semibold text-sm hover:bg-neutral-800 transition-all shadow-xs"
               >
@@ -451,7 +443,7 @@ export default function Home() {
 
             <div className="flex items-center gap-3 mt-3 sm:mt-4">
               <a
-                href="#contact"
+                href="mailto:nikelesh2006@gmail.com"
                 className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-xs sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs"
               >
                 <span>Let's collaborate</span>
@@ -491,14 +483,6 @@ export default function Home() {
         </div>
 
       </div>
-
-      {/* ================= TERMINAL SECTION ================= */}
-      <section
-        id="terminal-section"
-        className="w-full max-w-[860px] px-4 py-16 sm:py-24 flex items-center justify-center shrink-0"
-      >
-        <TerminalWindow />
-      </section>
     </main>
   );
 }
