@@ -5,18 +5,20 @@
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   background-color: #0d0d12;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  border-radius: 12px;
   box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 24px -6px rgba(124, 140, 255, 0.06);
   position: relative;
-  width: min(92vw, 1600px);
-  min-height: 56vh;
-  margin: 0 auto;
+  width: 100%;
+  max-width: min(65vw, 1120px);
+  min-height: 40vh;
+  margin: 0;
   overflow: visible;
 }
 
 @media (max-width: 899px) {
   .terminal-root {
-    width: 94vw;
+    width: 100%;
+    max-width: 94vw;
     min-height: auto;
   }
 }
@@ -25,37 +27,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: clamp(10px, 1.2vh, 18px) clamp(16px, 1.8vw, 28px);
+  padding: clamp(8px, 1vh, 14px) clamp(14px, 1.4vw, 22px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  border-top-left-radius: 13px;
-  border-top-right-radius: 13px;
+  border-top-left-radius: 11px;
+  border-top-right-radius: 11px;
   user-select: none;
 }
 
 .terminal-dots {
   display: flex;
   align-items: center;
-  gap: clamp(6px, 0.6vw, 10px);
+  gap: clamp(5px, 0.5vw, 8px);
 }
 
 .terminal-dot {
-  width: clamp(12px, 0.9vw, 16px);
-  height: clamp(12px, 0.9vw, 16px);
+  width: clamp(10px, 0.7vw, 13px);
+  height: clamp(10px, 0.7vw, 13px);
   border-radius: 50%;
   display: inline-block;
 }
 
 .terminal-body {
-  padding: clamp(20px, 2vw, 40px);
-  border-bottom-left-radius: 13px;
-  border-bottom-right-radius: 13px;
-  min-height: calc(56vh - 54px);
+  padding: clamp(16px, 1.6vw, 28px);
+  border-bottom-left-radius: 11px;
+  border-bottom-right-radius: 11px;
+  min-height: calc(40vh - 46px);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: clamp(12px, 1.4vh, 18px);
+  gap: clamp(10px, 1.2vh, 14px);
   line-height: 1.6;
-  font-size: clamp(14px, 1.15vw, 22px);
+  font-size: clamp(13px, 0.95vw, 16px);
   overflow: visible;
 }
 
@@ -74,13 +76,13 @@
 .terminal-prompt {
   color: #7c8cff;
   font-weight: 600;
-  font-size: clamp(15px, 1.25vw, 24px);
+  font-size: clamp(13.5px, 1vw, 17px);
   user-select: none;
 }
 
 @media (max-width: 899px) {
   .terminal-prompt {
-    font-size: 14px;
+    font-size: 13.5px;
   }
 }
 

@@ -6,6 +6,7 @@ import ColorRevealPhoto from '../components/ColorRevealPhoto';
 import FluxLines from '../components/FluxLines';
 import TerminalWindow from '../components/TerminalWindow';
 import ExperienceHeading from '../components/ExperienceHeading';
+import CometDial from '../components/CometDial';
 import { playClickSound } from '../lib/navigation';
 import mePhoto from '../assets/me.png';
 
@@ -52,6 +53,34 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const cardRef = useRef(null);
+  const dialRedirectTimerRef = useRef(null);
+  const hasRedirectedRef = useRef(false);
+
+  // CometDial 100% threshold redirection to Code Craft
+  const handleDialRedirect = (val) => {
+    if (val >= 100 && !hasRedirectedRef.current) {
+      if (!dialRedirectTimerRef.current) {
+        playClickSound();
+        dialRedirectTimerRef.current = setTimeout(() => {
+          hasRedirectedRef.current = true;
+          window.location.href = 'https://www.codecraftnet.com';
+        }, 350);
+      }
+    } else if (val < 100) {
+      if (dialRedirectTimerRef.current) {
+        clearTimeout(dialRedirectTimerRef.current);
+        dialRedirectTimerRef.current = null;
+      }
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (dialRedirectTimerRef.current) {
+        clearTimeout(dialRedirectTimerRef.current);
+      }
+    };
+  }, []);
 
   // Prevent background scrolling when mobile menu modal is open
   useEffect(() => {
@@ -583,38 +612,72 @@ export default function Home() {
       {/* ================= SECTION 2: EXPERIENCE ================= */}
       <section
         id="experience"
-        className="relative w-full min-h-[100dvh] bg-white flex flex-col items-center justify-start px-[4vw] pt-[clamp(88px,11.5vh,130px)] pb-[clamp(48px,8vh,96px)]"
+        className="relative w-full min-h-[100dvh] bg-white flex flex-col items-start justify-start px-[4vw] pt-[clamp(88px,11.5vh,130px)] pb-[clamp(48px,8vh,96px)]"
       >
-        <div className="w-full max-w-[94vw] min-[900px]:max-w-[min(92vw,1600px)] flex flex-col items-stretch">
+        <div className="w-full flex flex-col items-start">
           {/* (1) The "Experience" Top Heading */}
           <ExperienceHeading className="text-left w-full" />
 
-          {/* (2) Caption Row */}
-          <div className="w-full flex flex-col min-[900px]:flex-row min-[900px]:items-center justify-between gap-1.5 pt-5 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
-                Interactive Terminal Emulator
+          {/* Main Row: Terminal on the left, Circle with Right Arrow on the right */}
+          <div className="w-full flex flex-col min-[900px]:flex-row items-center justify-between gap-6 min-[900px]:gap-12 mt-2">
+            {/* Left Column: Terminal & Captions */}
+            <div className="w-full max-w-[94vw] min-[900px]:max-w-[min(65vw,1120px)] flex flex-col items-start">
+              {/* (2) Caption Row */}
+              <div className="w-full flex flex-col min-[900px]:flex-row min-[900px]:items-center justify-between gap-1.5 pt-4 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
+                    Interactive Terminal Emulator
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono text-neutral-400">
+                  Hover 'Code Craft' to run whois
+                </span>
+              </div>
+
+              {/* (3) Terminal Window */}
+              <div className="w-full">
+                <TerminalWindow />
+              </div>
+
+              {/* Bottom helper text */}
+              <p className="text-[11px] sm:text-xs text-neutral-400 font-mono mt-4 text-left">
+                💡 Interactive simulation. Hover or tap{' '}
+                <span className="text-neutral-700 font-semibold underline underline-offset-2">
+                  Code Craft
+                </span>{' '}
+                to reveal the live whois metadata card.
+              </p>
+            </div>
+
+            {/* Right Column: CometDial Animation (redirects to Code Craft at 100%) */}
+            <div className="flex flex-col items-center justify-center min-[900px]:flex-1 self-center py-6 min-[900px]:py-0">
+              <CometDial
+                defaultValue={62}
+                min={0}
+                max={100}
+                step={1}
+                unit="%"
+                label="Code Craft Progress"
+                accent="#000000"
+                ink="#000000"
+                size={250}
+                sweep={320}
+                thickness={5}
+                speed={25}
+                tapBounce={0.2}
+                flickBounce={0.1}
+                momentum={1}
+                cometReach={180}
+                cometWidth={12}
+                onChange={handleDialRedirect}
+                onChangeEnd={handleDialRedirect}
+              />
+              <span className="text-[11px] font-mono text-neutral-400 mt-2 text-center select-none">
+                Turn to 100% to visit Code Craft ↗
               </span>
             </div>
-            <span className="text-[11px] font-mono text-neutral-400">
-              Hover 'Code Craft' to run whois
-            </span>
           </div>
-
-          {/* (3) Terminal Window */}
-          <div className="w-full">
-            <TerminalWindow />
-          </div>
-
-          {/* Bottom helper text */}
-          <p className="text-[11px] sm:text-xs text-neutral-400 font-mono mt-4 text-center">
-            💡 Interactive simulation. Hover or tap{' '}
-            <span className="text-neutral-700 font-semibold underline underline-offset-2">
-              Code Craft
-            </span>{' '}
-            to reveal the live whois metadata card.
-          </p>
         </div>
       </section>
     </main>
