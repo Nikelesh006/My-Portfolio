@@ -50,23 +50,23 @@ export default function ColorRevealPhoto({
 
       if (isInsideRef.current) {
         const timeSinceMove = (now - lastMoveTimeRef.current) / 1000;
-        // Cursor is held still when stationary on the image for >= 250ms
-        const isStill = timeSinceMove >= 1.25;
+        // Cursor is held on the image for >= 150ms -> begin bloom to full image reveal
+        const isStill = timeSinceMove >= 0.15;
 
         if (isStill) {
-          // Cursor is kept still on the image -> bloom very slowly and gracefully to full image
+          // Cursor is kept on the image -> bloom smoothly to full color image within 1.5s total
           if (!stillStartRef.current) {
             stillStartRef.current = now;
           }
           const stillElapsed = (now - stillStartRef.current) / 1000;
-          // Ultra-smooth, slow reveal over ~4.8 seconds
-          const expandDuration = 4.8;
+          // Smooth reveal over 1.2s (total elapsed with 0.15s threshold = ~1.35s-1.5s)
+          const expandDuration = 1.2;
           const progress = Math.min(1, Math.max(0, stillElapsed / expandDuration));
-          // Smoothstep easing: gentle start, steady middle, gentle finish (no abrupt burst)
+          // Smoothstep easing: gentle acceleration, smooth finish
           const ease = progress * progress * (3 - 2 * progress);
           targetRRef.current = baseR + (maxR - baseR) * ease;
         } else {
-          // Cursor is moving on the hero image -> previous logic: spotlight only
+          // Cursor is moving on the hero image -> spotlight circle only
           stillStartRef.current = 0;
           targetRRef.current = baseR;
         }
@@ -76,15 +76,14 @@ export default function ColorRevealPhoto({
       }
 
       // Smooth interpolation:
-      // When contracting back to base spotlight during movement: responsive lerp
-      // When blooming slowly: very gentle lerp (0.05) to eliminate any rushing
+      // Snappy lerp (0.18-0.22) so the bloom completes cleanly within 1.5s
       let lerpR;
       if (!isInsideRef.current) {
-        lerpR = 0.15;
+        lerpR = 0.18;
       } else if (targetRRef.current < curRRef.current) {
-        lerpR = 0.12;
+        lerpR = 0.18;
       } else {
-        lerpR = 0.05;
+        lerpR = 0.22;
       }
 
       const lerpPos = 0.15;
@@ -149,12 +148,12 @@ export default function ColorRevealPhoto({
         const relX = clientX - rect.left;
         const relY = clientY - rect.top;
 
-        // Calculate distance moved to filter out subpixel jitter (< 2.5px)
+        // Calculate distance moved to filter out natural micro-jitter (< 8px)
         const prevX = lastPosRef.current.x ?? clientX;
         const prevY = lastPosRef.current.y ?? clientY;
         const dist = Math.hypot(clientX - prevX, clientY - prevY);
 
-        if (!isInsideRef.current || dist >= 2.5) {
+        if (!isInsideRef.current || dist >= 8) {
           lastMoveTimeRef.current = now;
           lastPosRef.current = { x: clientX, y: clientY };
           stillStartRef.current = 0;

@@ -43,17 +43,106 @@ body {
 }
 
 .hero-ghost-title {
-  font-size: clamp(18px, 1.7vw, 30px);
-  font-weight: 600;
-  line-height: 1.15;
-  white-space: nowrap;
+  font-size: clamp(24px, 2.6vw, 52px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  white-space: normal;
 }
 
 @media (max-width: 899px) {
   .hero-ghost-title {
-    font-size: clamp(17px, 4.4vw, 23px);
+    font-size: clamp(22px, 5.5vw, 34px);
     white-space: normal;
-    line-height: 1.25;
+    line-height: 1.15;
+  }
+}
+
+/* Hero Proportions & Responsive Layout */
+.hero-name-wrapper {
+  position: relative;
+  width: 94vw;
+  margin: 1rem auto 0;
+  height: clamp(140px, 22vh, 240px);
+  min-height: clamp(140px, 22vh, 240px);
+  flex-shrink: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  user-select: none;
+}
+
+@media (min-width: 900px) {
+  .hero-name-wrapper {
+    position: absolute;
+    top: 22vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92vw;
+    margin: 0;
+    height: clamp(220px, 32vh, 520px);
+    min-height: clamp(220px, 32vh, 520px);
+  }
+}
+
+.hero-photo-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 55vh;
+  min-height: clamp(300px, 55vh, 520px);
+  flex-shrink: 0;
+  margin: 1rem 0;
+  z-index: 2;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 900px) {
+  .hero-photo-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    height: clamp(420px, 82vh, 1100px);
+    min-height: clamp(420px, 82vh, 1100px);
+    margin: 0;
+  }
+}
+
+.hero-bottom-region {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  pointer-events: auto;
+}
+
+@media (min-width: 900px) {
+  .hero-bottom-region {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    padding-bottom: 10vh;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 0;
+    pointer-events: none;
   }
 }
 

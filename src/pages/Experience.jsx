@@ -265,7 +265,7 @@ export default function Experience() {
       </section>
 
       {/* ================= 3. INTERACTIVE TERMINAL SECTION ================= */}
-      <section className="w-full max-w-4xl px-4 sm:px-6 md:px-10 py-6 sm:py-8 flex flex-col items-center">
+      <section className="w-full max-w-4xl px-4 sm:px-6 md:px-10 py-6 sm:py-8 pb-16 sm:pb-24 flex flex-col items-center">
         <div className="w-full flex items-center justify-between pb-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -286,58 +286,6 @@ export default function Experience() {
         <p className="text-[11px] sm:text-xs text-neutral-400 font-mono mt-3 text-center">
           💡 Interactive simulation. Hover or tap <span className="text-neutral-700 font-semibold underline underline-offset-2">Code Craft</span> to reveal the live whois metadata card.
         </p>
-      </section>
-
-      {/* ================= 4. BOTTOM CTA & FOOTER ================= */}
-      <section className="w-full max-w-4xl px-4 sm:px-6 md:px-10 py-12">
-        <div className="p-8 sm:p-10 rounded-3xl bg-[#0a0a0a] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex flex-col gap-1.5 max-w-md">
-            <h3 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-              Let's Build Something Resilient
-            </h3>
-            <p className="text-neutral-400 text-xs sm:text-sm leading-relaxed">
-              Available for full-time backend roles, contracting, or discussing architectural challenges.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0">
-            <a
-              href="mailto:nikelesh2006@gmail.com"
-              onClick={playClickSound}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-white text-black font-bold text-xs sm:text-sm hover:bg-neutral-200 transition-colors shadow-lg"
-            >
-              <span>Get in touch</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </a>
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs sm:text-sm transition-colors cursor-pointer"
-            >
-              <span>Home</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Minimal Footer */}
-        <div className="mt-10 pt-5 border-t border-neutral-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 pb-10">
-          <p>© {new Date().getFullYear()} Nikeleshwaran T. All rights reserved.</p>
-
-          <div className="flex items-center gap-4">
-            {socialLinks.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                target={item.isExternal ? '_blank' : undefined}
-                rel={item.isExternal ? 'noopener noreferrer' : undefined}
-                onClick={playClickSound}
-                className="hover:text-black transition-colors"
-              >
-                {item.name}
-              </a>
-            ))}
-          </div>
-        </div>
       </section>
     </main>
   );

@@ -3,7 +3,7 @@ import { ArrowUpRight, Mail, FileText, Menu, X } from 'lucide-react';
 import TechText from '../components/TechText';
 import GhostType from '../components/GhostType';
 import ColorRevealPhoto from '../components/ColorRevealPhoto';
-import SplashCursor from '../components/SplashCursor';
+import FluxLines from '../components/FluxLines';
 import { navigate, playClickSound } from '../lib/navigation';
 import mePhoto from '../assets/me.png';
 
@@ -117,33 +117,35 @@ export default function Home() {
     }
   }, []);
 
-  // Check if fluid SplashCursor should be active (skip on prefers-reduced-motion or < 640px)
-  const [shouldRenderSplash, setShouldRenderSplash] = useState(() => {
+  // Responsive viewport width tracker for mobile GPU optimizations (< 640px)
+  const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === 'undefined') return false;
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const isNarrow = window.innerWidth < 640;
-    return !prefersReduced && !isNarrow;
+    return window.innerWidth < 640;
   });
 
+  // Track Anton font readiness so TechText renders cleanly with the condensed font from frame 1
+  const [fontLoaded, setFontLoaded] = useState(false);
+
   useEffect(() => {
-    const checkSplash = () => {
-      if (typeof window === 'undefined') return false;
-      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const isNarrow = window.innerWidth < 640;
-      return !prefersReduced && !isNarrow;
+    if (typeof document === 'undefined') return;
+    if (document.fonts) {
+      Promise.all([
+        document.fonts.load('400 100px Anton'),
+        document.fonts.ready
+      ])
+        .then(() => setFontLoaded(true))
+        .catch(() => setFontLoaded(true));
+    } else {
+      setFontLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
     };
-
-    const handleResize = () => setShouldRenderSplash(checkSplash());
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const handleMotionChange = () => setShouldRenderSplash(checkSplash());
-
     window.addEventListener('resize', handleResize);
-    motionQuery.addEventListener('change', handleMotionChange);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      motionQuery.removeEventListener('change', handleMotionChange);
-    };
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const socialLinks = [
@@ -175,7 +177,7 @@ export default function Home() {
 
   return (
     <main
-      className="w-full min-h-screen bg-white flex flex-col items-center font-['Manrope',sans-serif] selection:bg-neutral-900 selection:text-white overflow-x-hidden"
+      className="w-full min-h-screen min-[900px]:h-[100dvh] min-[900px]:overflow-hidden bg-white flex flex-col items-center font-['Manrope',sans-serif] selection:bg-neutral-900 selection:text-white overflow-x-hidden"
       style={{
         backgroundColor: 'var(--frame-bg, #ffffff)'
       }}
@@ -200,35 +202,33 @@ export default function Home() {
       {/* Full Viewport Canvas Card (governed by --frame) */}
       <div
         ref={cardRef}
-        className="relative bg-white flex flex-col justify-between overflow-x-hidden transition-all duration-300 w-full"
+        className="relative bg-white flex flex-col justify-between overflow-x-hidden min-[900px]:overflow-hidden transition-all duration-300 w-full min-h-[100dvh] min-[900px]:h-[100dvh]"
         style={{
           margin: 'var(--frame, 0px)',
           borderRadius: 'var(--frame, 0px)',
           width: 'calc(100% - (var(--frame, 0px) * 2))',
-          minHeight: 'calc(100vh - (var(--frame, 0px) * 2))'
+          height: 'calc(100dvh - (var(--frame, 0px) * 2))'
         }}
       >
-        {/* Fluid Glassy Silver Splash Cursor (contained in hero) */}
-        {shouldRenderSplash && (
-          <SplashCursor
-            theme="light"
-            contained
-            rainbow={false}
-            colors={['#ffffff', '#f8fafc', '#edf2f7', '#e2e8f0', '#cbd5e1']}
-            size={1.7}
-            force={0.42}
-            swirl={0.38}
-            trail={2.0}
-            clickSplash
-            intensity={0.42}
-            momentum={1.8}
-            quality="medium"
-            zIndex={30}
+        {/* FluxLines Background */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }} aria-hidden="true">
+          <FluxLines
+            lightMode
+            transparent
+            colors={['#111111', '#7c8cff', '#2dd4bf']}
+            glow={2}
+            rimWidth={0.2}
+            lineWidth={1}
+            flowDirection="down"
+            mouseInteraction
+            clickSwirl
+            opacity={0.5}
+            dpr={isMobile ? 1 : undefined}
           />
-        )}
+        </div>
 
         {/* ================= 1. TOP NAVBAR REGION ================= */}
-        <header className="relative z-40 w-full max-w-full px-4 py-3 sm:px-6 sm:py-4 md:px-10 md:py-5 flex items-center justify-between border-b border-neutral-100 shrink-0">
+        <header className="relative z-40 w-full max-w-full px-4 sm:px-6 min-[900px]:px-[2vw] pt-[clamp(16px,3vh,36px)] pb-[clamp(12px,2vh,20px)] flex items-center justify-between border-b border-neutral-100 shrink-0 min-h-[clamp(56px,7.5vh,80px)]">
           {/* Left: Brand / Logo */}
           <div className="flex items-center">
             <span className="text-xs sm:text-sm font-bold tracking-wider uppercase text-neutral-900 select-none">
@@ -366,62 +366,45 @@ export default function Home() {
           </div>
         )}
 
-        {/* ================= 2. MIDDLE REGION: TECHTEXT NAME ================= */}
-        <div className="relative w-full max-w-full overflow-hidden flex-1 min-h-0 z-[1] flex items-center justify-center pointer-events-none pt-[1vh] pb-[0.5vh]">
-          <div
-            className="w-full max-w-full relative pointer-events-auto"
-            style={{
-              height: 'clamp(150px, 30vh, 420px)'
-            }}
-          >
-            <TechText
-              text="NIKELESHWARAN"
-              fontFamily="Manrope, sans-serif"
-              fontWeight={700}
-              fontSize={220}
-              color="#0a0a0a"
-              accentColor="#0a0a0a"
-              reveal="letter"
-              dashLength={4}
-              dashGap={2}
-              specks={15}
-              intro="type"
-              introDuration={2}
-              clickKick
-              guides={false}
-            />
-          </div>
+        {/* ================= 2. NAME: TECHTEXT ("NIKELESHWARAN") ================= */}
+        <div className="hero-name-wrapper overflow-hidden">
+          <TechText
+            key={fontLoaded ? 'anton-loaded' : 'anton-loading'}
+            text="NIKELESHWARAN"
+            fontFamily="Anton, sans-serif"
+            fontWeight={400}
+            fontSize={400}
+            color="#0a0a0a"
+            accentColor="#0a0a0a"
+            reveal="letter"
+            dashLength={4}
+            dashGap={2}
+            specks={15}
+            intro="type"
+            introDuration={2}
+            clickKick
+            guides={false}
+          />
         </div>
 
         {/* ================= PORTRAIT PHOTO ================= */}
-        {/* Flush with bottom edge, centered horizontally, overlaps lower third of the name letters */}
-        <div
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 z-[2] pointer-events-none flex items-end justify-center select-none"
-          style={{
-            height: 'clamp(320px, 58vh, 800px)',
-            width: 'auto',
-            pointerEvents: 'none'
-          }}
-        >
+        {/* Mobile: 55vh height, bottom-centered in stack. Desktop: 82vh anchored to bottom, top of head at ~18vh */}
+        <div className="hero-photo-wrapper">
           <ColorRevealPhoto
             src={mePhoto}
             alt="Nikeleshwaran T"
             containerRef={cardRef}
-            radius={140}
+            radius={160}
             mode="spotlight"
           />
         </div>
 
         {/* ================= 3. BOTTOM REGION: CONTENT & SOCIALS ================= */}
-        <div
-          className="relative z-10 w-full max-w-full px-4 sm:px-6 md:px-10 flex flex-col min-[900px]:flex-row justify-between items-start min-[900px]:items-end gap-4 min-[900px]:gap-6 pointer-events-auto shrink-0 pb-4 sm:pb-6 min-[900px]:pb-8"
-        >
+        <div className="hero-bottom-region shrink-0">
           {/* Bottom Left: Title, Description & CTA */}
-          <div
-            className="w-full min-[900px]:max-w-[min(46vw,720px)] bg-white/85 min-[900px]:bg-transparent backdrop-blur-md min-[900px]:backdrop-blur-none border border-neutral-200/70 min-[900px]:border-none p-4 sm:p-5 min-[900px]:p-0 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] min-[900px]:shadow-none"
-          >
-            {/* Fixed min-height for one line so GhostType transitions do not shift layout */}
-            <div className="min-h-[1.25em] flex items-center">
+          <div className="w-full min-[900px]:max-w-[40vw] pointer-events-auto">
+            {/* Fixed min-height for two lines so GhostType transitions do not shift layout */}
+            <div className="min-h-[clamp(54px,5.8vw,115px)] flex items-start">
               <GhostType
                 as="h2"
                 className="hero-ghost-title"
@@ -432,7 +415,7 @@ export default function Home() {
                   ', AI Architect',
                   ', Full Stack Engineer'
                 ]}
-                fontWeight={600}
+                fontWeight={700}
                 textColor="#0a0a0a"
                 accentColor="#0a0a0a"
                 ghostOpacity={0.4}
@@ -446,35 +429,40 @@ export default function Home() {
                 hint
                 hintLabel="Tab"
                 caret="bar"
+                style={{
+                  fontSize: 'clamp(24px, 2.6vw, 52px)',
+                  fontWeight: 700,
+                  letterSpacing: '0.01em',
+                  lineHeight: 1.1,
+                  textTransform: 'uppercase'
+                }}
               />
             </div>
 
-            <p
-              className="text-neutral-500 font-normal leading-relaxed text-xs sm:text-sm mt-2 sm:mt-2.5 max-w-[420px]"
-            >
+            <p className="text-neutral-500 font-normal leading-relaxed text-[clamp(14px,1.1vw,18px)] mt-[clamp(8px,1.5vh,16px)] max-w-full min-[900px]:max-w-[34vw]">
               I build and ship full-stack products, from backend APIs to deployment pipelines.
             </p>
 
-            <div className="flex items-center gap-3 mt-3 sm:mt-4">
+            <div className="flex items-center gap-3 mt-[clamp(12px,2vh,20px)]">
               <a
                 href="mailto:nikelesh2006@gmail.com"
-                className="inline-flex items-center gap-1.5 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-xs sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs"
+                className="inline-flex items-center gap-2 px-[clamp(20px,1.8vw,32px)] h-[clamp(44px,5vh,60px)] rounded-full bg-[#0a0a0a] text-white text-[clamp(14px,1.1vw,18px)] font-semibold hover:bg-neutral-800 transition-all shadow-xs shrink-0"
               >
                 <span>Let's collaborate</span>
-                <ArrowUpRight className="w-3.5 h-3.5" />
+                <ArrowUpRight className="w-[clamp(14px,1.1vw,18px)] h-[clamp(14px,1.1vw,18px)]" />
               </a>
               <a
                 href="#resume"
-                className="inline-flex sm:hidden items-center gap-1.5 px-3.5 py-2 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-xs font-semibold transition-colors"
+                className="inline-flex sm:hidden items-center gap-1.5 px-4 h-[clamp(44px,5vh,60px)] rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-[clamp(14px,1.1vw,18px)] font-semibold transition-colors shrink-0"
               >
-                <FileText className="w-3.5 h-3.5 text-neutral-600" />
+                <FileText className="w-4 h-4 text-neutral-600" />
                 <span>Resume</span>
               </a>
             </div>
           </div>
 
-          {/* Bottom Right: Social Pills (Grid 2x2 on mobile, vertical stack on desktop) */}
-          <div className="w-full min-[900px]:w-auto grid grid-cols-2 sm:flex sm:flex-wrap min-[900px]:flex-col items-stretch min-[900px]:items-end gap-2 sm:gap-2.5">
+          {/* Bottom Right: Social Pills (Vertical stack on desktop, 2x2 grid on mobile) */}
+          <div className="w-full min-[900px]:w-auto grid grid-cols-2 min-[900px]:flex min-[900px]:flex-col items-stretch min-[900px]:items-end gap-[clamp(8px,1.2vh,14px)] pointer-events-auto">
             {socialLinks.map((item) => {
               const Icon = item.icon;
               return (
@@ -483,13 +471,13 @@ export default function Home() {
                   href={item.href}
                   target={item.isExternal ? '_blank' : undefined}
                   rel={item.isExternal ? 'noopener noreferrer' : undefined}
-                  className="group inline-flex items-center justify-between sm:justify-start gap-2 px-3.5 py-2 sm:px-4 sm:py-2 rounded-full bg-white/90 backdrop-blur-sm border border-neutral-200/90 shadow-[0_2px_6px_rgba(0,0,0,0.03)] text-xs font-semibold text-neutral-700 hover:text-black hover:border-neutral-400 hover:-translate-y-0.5 transition-all duration-200"
+                  className="group inline-flex items-center justify-between sm:justify-start gap-[clamp(10px,1vw,16px)] px-[clamp(16px,1.4vw,28px)] h-[clamp(44px,5vh,60px)] rounded-full bg-white/90 backdrop-blur-sm border border-neutral-200/90 shadow-[0_2px_6px_rgba(0,0,0,0.03)] text-[clamp(14px,1.1vw,18px)] font-semibold text-neutral-700 hover:text-black hover:border-neutral-400 hover:-translate-y-0.5 transition-all duration-200"
                 >
-                  <div className="flex items-center gap-2">
-                    <Icon className="w-3.5 h-3.5 text-neutral-500 group-hover:text-black transition-colors" />
+                  <div className="flex items-center gap-[clamp(8px,0.8vw,12px)]">
+                    <Icon className="w-[clamp(16px,1.1vw,20px)] h-[clamp(16px,1.1vw,20px)] text-neutral-500 group-hover:text-black transition-colors" />
                     <span>{item.name}</span>
                   </div>
-                  <ArrowUpRight className="w-3 h-3 text-neutral-400 group-hover:text-black transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <ArrowUpRight className="w-[clamp(14px,1vw,18px)] h-[clamp(14px,1vw,18px)] text-neutral-400 group-hover:text-black transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </a>
               );
             })}
