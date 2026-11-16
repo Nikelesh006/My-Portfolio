@@ -4,7 +4,9 @@ import TechText from '../components/TechText';
 import GhostType from '../components/GhostType';
 import ColorRevealPhoto from '../components/ColorRevealPhoto';
 import FluxLines from '../components/FluxLines';
-import { navigate, playClickSound } from '../lib/navigation';
+import TerminalWindow from '../components/TerminalWindow';
+import ExperienceHeading from '../components/ExperienceHeading';
+import { playClickSound } from '../lib/navigation';
 import mePhoto from '../assets/me.png';
 
 function GithubIcon(props) {
@@ -47,6 +49,8 @@ function LinkedinIcon(props) {
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const cardRef = useRef(null);
 
   // Prevent background scrolling when mobile menu modal is open
@@ -72,7 +76,7 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [mobileMenuOpen]);
 
-  // Handle external auth errors in URL query params (e.g. ?error=auth_failed) and clean up address bar
+  // Handle external auth errors in URL query params
   const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
@@ -85,36 +89,111 @@ export default function Home() {
           ? 'Authentication failed. Please verify your credentials or login provider.'
           : `Authentication error: ${err}`
       );
-      // Clean query parameter from URL bar without refreshing
       const cleanUrl = window.location.pathname + window.location.hash;
       window.history.replaceState({}, '', cleanUrl);
-
-      // Auto dismiss after 6 seconds
       const timer = setTimeout(() => setAuthError(null), 6000);
       return () => clearTimeout(timer);
     }
   }, []);
 
-  // Scroll to hash target on mount if present, or start at top if no hash
+  // Smooth scroll handler with prefers-reduced-motion check
+  const scrollToSection = (id) => {
+    if (id === 'home' && typeof window !== 'undefined' && window.scrollY <= 10) {
+      return; // A "Home" click while already at the top does nothing
+    }
+
+    const el = document.getElementById(id);
+    if (el) {
+      playClickSound();
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+
+      el.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth'
+      });
+
+      setActiveSection(id);
+      window.history.replaceState(null, '', `#${id}`);
+    }
+  };
+
+  // Scroll listener for translucent navbar transition (> 80px) and active section tracking
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const hash = window.location.hash;
-    if (hash) {
-      const scrollToHash = () => {
-        const target = document.querySelector(hash);
-        if (target) {
-          target.scrollIntoView({ behavior: 'auto' });
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setIsScrolled(scrollY > 80);
+
+      const expEl = document.getElementById('experience');
+      if (expEl) {
+        const rect = expEl.getBoundingClientRect();
+        // If experience section's top is within 45% of viewport height, mark Experience as active
+        if (rect.top <= window.innerHeight * 0.45) {
+          setActiveSection('experience');
+          if (window.location.hash !== '#experience') {
+            window.history.replaceState(null, '', '#experience');
+          }
+        } else {
+          setActiveSection('home');
+          if (window.location.hash === '#experience') {
+            window.history.replaceState(null, '', '#home');
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Handle direct loads to /#experience or /experience
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const path = window.location.pathname.toLowerCase();
+    const hash = window.location.hash.toLowerCase();
+
+    if (path === '/experience' || path === '/experience/') {
+      window.history.replaceState(null, '', '/#experience');
+    }
+
+    if (hash === '#experience' || path === '/experience' || path === '/experience/') {
+      setActiveSection('experience');
+      const scrollToExp = () => {
+        const el = document.getElementById('experience');
+        if (el) {
+          el.scrollIntoView({ behavior: 'auto' });
         }
       };
-      const t1 = setTimeout(scrollToHash, 300);
-      const t2 = setTimeout(scrollToHash, 900);
+      const t1 = setTimeout(scrollToExp, 60);
+      const t2 = setTimeout(scrollToExp, 250);
+      const t3 = setTimeout(scrollToExp, 600);
       return () => {
         clearTimeout(t1);
         clearTimeout(t2);
+        clearTimeout(t3);
       };
     } else {
       window.scrollTo(0, 0);
     }
+  }, []);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      if (hash === '#experience') {
+        const el = document.getElementById('experience');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      } else if (hash === '#home' || !hash) {
+        const el = document.getElementById('home');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   // Responsive viewport width tracker for mobile GPU optimizations (< 640px)
@@ -123,7 +202,7 @@ export default function Home() {
     return window.innerWidth < 640;
   });
 
-  // Track Anton font readiness so TechText renders cleanly with the condensed font from frame 1
+  // Track Anton font readiness
   const [fontLoaded, setFontLoaded] = useState(false);
 
   useEffect(() => {
@@ -131,6 +210,7 @@ export default function Home() {
     if (document.fonts) {
       Promise.all([
         document.fonts.load('400 100px Anton'),
+        document.fonts.load('400 100px "Bebas Neue"'),
         document.fonts.ready
       ])
         .then(() => setFontLoaded(true))
@@ -176,12 +256,7 @@ export default function Home() {
   ];
 
   return (
-    <main
-      className="w-full min-h-screen min-[900px]:h-[100dvh] min-[900px]:overflow-hidden bg-white flex flex-col items-center font-['Manrope',sans-serif] selection:bg-neutral-900 selection:text-white overflow-x-hidden"
-      style={{
-        backgroundColor: 'var(--frame-bg, #ffffff)'
-      }}
-    >
+    <main className="w-full min-h-screen bg-white flex flex-col items-center font-['Manrope',sans-serif] selection:bg-neutral-900 selection:text-white overflow-x-hidden relative">
       {/* Auth Error Notification Toast */}
       {authError && (
         <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] max-w-md w-[calc(100%-32px)] bg-neutral-900 text-white px-4 py-3 rounded-2xl shadow-2xl border border-neutral-700/80 flex items-center justify-between gap-3 text-xs sm:text-sm">
@@ -199,16 +274,176 @@ export default function Home() {
           </button>
         </div>
       )}
-      {/* Full Viewport Canvas Card (governed by --frame) */}
-      <div
+
+      {/* ================= 1. FIXED TOP NAVBAR ================= */}
+      <header
+        className={`fixed top-0 left-0 right-0 z-40 w-full px-4 sm:px-6 min-[900px]:px-[4vw] flex items-center justify-between transition-all duration-300 min-h-[clamp(60px,7.5vh,80px)] ${
+          isScrolled
+            ? 'bg-white/85 backdrop-blur-md border-b border-neutral-200/80 shadow-xs py-3 sm:py-3.5'
+            : 'bg-transparent border-b border-transparent py-[clamp(16px,2.5vh,28px)]'
+        }`}
+      >
+        {/* Left: Brand / Logo */}
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={() => scrollToSection('home')}
+            className="text-xs sm:text-sm font-bold tracking-wider uppercase text-neutral-900 select-none cursor-pointer"
+            aria-label="Nikeleshwaran Portfolio Home"
+          >
+            Nikel
+          </button>
+        </div>
+
+        {/* Center: Nav Links (Desktop >= 900px) */}
+        <nav className="hidden min-[900px]:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-neutral-600">
+          <button
+            type="button"
+            onClick={() => scrollToSection('home')}
+            className={`cursor-pointer transition-colors ${
+              activeSection === 'home'
+                ? 'text-black font-bold border-b-2 border-black pb-0.5'
+                : 'text-neutral-600 hover:text-black'
+            }`}
+          >
+            Home
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToSection('experience')}
+            className={`cursor-pointer transition-colors flex items-center gap-1 ${
+              activeSection === 'experience'
+                ? 'text-black font-bold border-b-2 border-black pb-0.5'
+                : 'text-neutral-600 hover:text-black'
+            }`}
+          >
+            <span>Experience</span>
+            <span
+              className={`text-[10px] font-mono font-normal ${
+                activeSection === 'experience' ? 'text-neutral-600' : 'text-neutral-400'
+              }`}
+            >
+              [1+]
+            </span>
+          </button>
+        </nav>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Let's Talk CTA */}
+          <a
+            href="mailto:nikelesh2006@gmail.com"
+            onClick={playClickSound}
+            className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-[11px] sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs shrink-0"
+          >
+            <span>Let's Talk</span>
+            <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+          </a>
+
+          {/* Mobile Menu Button (< 900px) */}
+          <button
+            type="button"
+            onClick={() => {
+              playClickSound();
+              setMobileMenuOpen(!mobileMenuOpen);
+            }}
+            className="min-[900px]:hidden flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100/90 hover:bg-neutral-200 text-neutral-800 transition-colors shrink-0"
+            aria-label="Toggle navigation menu"
+          >
+            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
+        </div>
+      </header>
+
+      {/* ================= MOBILE NAVIGATION MODAL (< 900px) ================= */}
+      {mobileMenuOpen && (
+        <div className="min-[900px]:hidden fixed inset-0 z-50 flex flex-col justify-between bg-white/98 backdrop-blur-xl p-6 transition-all duration-300">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
+            <span className="text-xs font-bold tracking-wider uppercase text-neutral-900">
+              Menu
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                playClickSound();
+                setMobileMenuOpen(false);
+              }}
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors"
+              aria-label="Close menu"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Nav Links */}
+          <nav className="flex flex-col gap-5 py-6">
+            {[
+              { label: 'Home', id: 'home', active: activeSection === 'home' },
+              { label: 'Experience', id: 'experience', count: '1+', active: activeSection === 'experience' }
+            ].map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  scrollToSection(item.id);
+                }}
+                className={`flex items-center justify-between text-2xl font-bold tracking-tight text-left transition-colors cursor-pointer ${
+                  item.active ? 'text-black' : 'text-neutral-500 hover:text-black'
+                }`}
+              >
+                <span>{item.label}</span>
+                {item.count ? (
+                  <span className="text-sm font-mono text-neutral-400 font-normal">[{item.count}]</span>
+                ) : (
+                  <ArrowUpRight className="w-5 h-5 text-neutral-400" />
+                )}
+              </button>
+            ))}
+          </nav>
+
+          {/* Modal Footer / CTAs & Socials */}
+          <div className="flex flex-col gap-4 border-t border-neutral-100 pt-5">
+            <a
+              href="mailto:nikelesh2006@gmail.com"
+              onClick={() => {
+                playClickSound();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-[#0a0a0a] text-white font-semibold text-sm hover:bg-neutral-800 transition-all shadow-xs"
+            >
+              <span>Let's Talk</span>
+              <ArrowUpRight className="w-4 h-4" />
+            </a>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              {socialLinks.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    target={item.isExternal ? '_blank' : undefined}
+                    rel={item.isExternal ? 'noopener noreferrer' : undefined}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200/80 text-xs font-semibold text-neutral-700 hover:text-black hover:bg-neutral-100 transition-colors"
+                  >
+                    <Icon className="w-3.5 h-3.5 text-neutral-500" />
+                    <span>{item.name}</span>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= SECTION 1: HOME HERO ================= */}
+      <section
+        id="home"
         ref={cardRef}
-        className="relative bg-white flex flex-col justify-between overflow-x-hidden min-[900px]:overflow-hidden transition-all duration-300 w-full min-h-[100dvh] min-[900px]:h-[100dvh]"
-        style={{
-          margin: 'var(--frame, 0px)',
-          borderRadius: 'var(--frame, 0px)',
-          width: 'calc(100% - (var(--frame, 0px) * 2))',
-          height: 'calc(100dvh - (var(--frame, 0px) * 2))'
-        }}
+        className="relative w-full min-h-[100dvh] min-[900px]:h-[100dvh] overflow-hidden flex flex-col justify-between bg-white pt-[clamp(60px,7.5vh,80px)] min-[900px]:pt-0"
       >
         {/* FluxLines Background */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }} aria-hidden="true">
@@ -227,146 +462,7 @@ export default function Home() {
           />
         </div>
 
-        {/* ================= 1. TOP NAVBAR REGION ================= */}
-        <header className="relative z-40 w-full max-w-full px-4 sm:px-6 min-[900px]:px-[2vw] pt-[clamp(16px,3vh,36px)] pb-[clamp(12px,2vh,20px)] flex items-center justify-between border-b border-neutral-100 shrink-0 min-h-[clamp(56px,7.5vh,80px)]">
-          {/* Left: Brand / Logo */}
-          <div className="flex items-center">
-            <span className="text-xs sm:text-sm font-bold tracking-wider uppercase text-neutral-900 select-none">
-              Nikel
-            </span>
-          </div>
-
-          {/* Center: Nav Links (Desktop >= 900px) */}
-          <nav className="hidden min-[900px]:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-neutral-600">
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="text-black font-bold border-b-2 border-black pb-0.5 cursor-pointer"
-            >
-              Home
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/experience')}
-              className="hover:text-black transition-colors flex items-center gap-1 cursor-pointer"
-            >
-              <span>Experience</span>
-              <span className="text-[10px] text-neutral-400 font-mono font-normal">[1+]</span>
-            </button>
-          </nav>
-
-          {/* Right: Actions */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Let's Talk CTA */}
-            <a
-              href="mailto:nikelesh2006@gmail.com"
-              onClick={playClickSound}
-              className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-[11px] sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs shrink-0"
-            >
-              <span>Let's Talk</span>
-              <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-            </a>
-
-            {/* Mobile Menu Button (< 900px) */}
-            <button
-              type="button"
-              onClick={() => {
-                playClickSound();
-                setMobileMenuOpen(!mobileMenuOpen);
-              }}
-              className="min-[900px]:hidden flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-800 transition-colors shrink-0"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
-          </div>
-        </header>
-
-        {/* ================= MOBILE NAVIGATION MODAL (< 900px) ================= */}
-        {mobileMenuOpen && (
-          <div className="min-[900px]:hidden fixed inset-0 z-50 flex flex-col justify-between bg-white/95 backdrop-blur-xl p-6 transition-all duration-300">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-neutral-100 pb-4">
-              <span className="text-xs font-bold tracking-wider uppercase text-neutral-900">
-                Menu
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  playClickSound();
-                  setMobileMenuOpen(false);
-                }}
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 transition-colors"
-                aria-label="Close menu"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Nav Links */}
-            <nav className="flex flex-col gap-5 py-6">
-              {[
-                { label: 'Home', href: '/', active: true },
-                { label: 'Experience', href: '/experience', count: '1+' }
-              ].map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    navigate(item.href);
-                  }}
-                  className={`flex items-center justify-between text-2xl font-bold tracking-tight text-left transition-colors ${
-                    item.active ? 'text-black' : 'text-neutral-500 hover:text-black'
-                  }`}
-                >
-                  <span>{item.label}</span>
-                  {item.count ? (
-                    <span className="text-sm font-mono text-neutral-400 font-normal">[{item.count}]</span>
-                  ) : (
-                    <ArrowUpRight className="w-5 h-5 text-neutral-400" />
-                  )}
-                </button>
-              ))}
-            </nav>
-
-            {/* Modal Footer / CTAs & Socials */}
-            <div className="flex flex-col gap-4 border-t border-neutral-100 pt-5">
-              <a
-                href="mailto:nikelesh2006@gmail.com"
-                onClick={() => {
-                  playClickSound();
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-[#0a0a0a] text-white font-semibold text-sm hover:bg-neutral-800 transition-all shadow-xs"
-              >
-                <span>Let's Talk</span>
-                <ArrowUpRight className="w-4 h-4" />
-              </a>
-
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                {socialLinks.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      target={item.isExternal ? '_blank' : undefined}
-                      rel={item.isExternal ? 'noopener noreferrer' : undefined}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-neutral-50 border border-neutral-200/80 text-xs font-semibold text-neutral-700 hover:text-black hover:bg-neutral-100 transition-colors"
-                    >
-                      <Icon className="w-3.5 h-3.5 text-neutral-500" />
-                      <span>{item.name}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ================= 2. NAME: TECHTEXT ("NIKELESHWARAN") ================= */}
+        {/* 2. NAME: TECHTEXT ("NIKELESHWARAN") */}
         <div className="hero-name-wrapper overflow-hidden">
           <TechText
             key={fontLoaded ? 'anton-loaded' : 'anton-loading'}
@@ -374,6 +470,7 @@ export default function Home() {
             fontFamily="Anton, sans-serif"
             fontWeight={400}
             fontSize={400}
+            letterSpacing={0.06}
             color="#0a0a0a"
             accentColor="#0a0a0a"
             reveal="letter"
@@ -387,8 +484,7 @@ export default function Home() {
           />
         </div>
 
-        {/* ================= PORTRAIT PHOTO ================= */}
-        {/* Mobile: 55vh height, bottom-centered in stack. Desktop: 82vh anchored to bottom, top of head at ~18vh */}
+        {/* PORTRAIT PHOTO */}
         <div className="hero-photo-wrapper">
           <ColorRevealPhoto
             src={mePhoto}
@@ -399,11 +495,10 @@ export default function Home() {
           />
         </div>
 
-        {/* ================= 3. BOTTOM REGION: CONTENT & SOCIALS ================= */}
+        {/* 3. BOTTOM REGION: CONTENT & SOCIALS */}
         <div className="hero-bottom-region shrink-0">
           {/* Bottom Left: Title, Description & CTA */}
           <div className="w-full min-[900px]:max-w-[40vw] pointer-events-auto">
-            {/* Fixed min-height for two lines so GhostType transitions do not shift layout */}
             <div className="min-h-[clamp(54px,5.8vw,115px)] flex items-start">
               <GhostType
                 as="h2"
@@ -461,7 +556,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Bottom Right: Social Pills (Vertical stack on desktop, 2x2 grid on mobile) */}
+          {/* Bottom Right: Social Pills */}
           <div className="w-full min-[900px]:w-auto grid grid-cols-2 min-[900px]:flex min-[900px]:flex-col items-stretch min-[900px]:items-end gap-[clamp(8px,1.2vh,14px)] pointer-events-auto">
             {socialLinks.map((item) => {
               const Icon = item.icon;
@@ -483,8 +578,45 @@ export default function Home() {
             })}
           </div>
         </div>
+      </section>
 
-      </div>
+      {/* ================= SECTION 2: EXPERIENCE ================= */}
+      <section
+        id="experience"
+        className="relative w-full min-h-[100dvh] bg-white flex flex-col items-center justify-start px-[4vw] pt-[clamp(88px,11.5vh,130px)] pb-[clamp(48px,8vh,96px)]"
+      >
+        <div className="w-full max-w-[94vw] min-[900px]:max-w-[min(92vw,1600px)] flex flex-col items-stretch">
+          {/* (1) The "Experience" Top Heading */}
+          <ExperienceHeading className="text-left w-full" />
+
+          {/* (2) Caption Row */}
+          <div className="w-full flex flex-col min-[900px]:flex-row min-[900px]:items-center justify-between gap-1.5 pt-5 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[11px] sm:text-xs font-mono font-bold uppercase tracking-wider text-neutral-500">
+                Interactive Terminal Emulator
+              </span>
+            </div>
+            <span className="text-[11px] font-mono text-neutral-400">
+              Hover 'Code Craft' to run whois
+            </span>
+          </div>
+
+          {/* (3) Terminal Window */}
+          <div className="w-full">
+            <TerminalWindow />
+          </div>
+
+          {/* Bottom helper text */}
+          <p className="text-[11px] sm:text-xs text-neutral-400 font-mono mt-4 text-center">
+            💡 Interactive simulation. Hover or tap{' '}
+            <span className="text-neutral-700 font-semibold underline underline-offset-2">
+              Code Craft
+            </span>{' '}
+            to reveal the live whois metadata card.
+          </p>
+        </div>
+      </section>
     </main>
   );
 }

@@ -290,7 +290,7 @@ export default function TerminalWindow({
 
         {/* Experience Line 1: Role & Code Craft link */}
         {activeStep >= 4 && (
-          <div className="flex items-center flex-wrap pt-1 text-xs sm:text-sm">
+          <div className="flex items-center flex-wrap pt-1">
             <span className="text-[#a5b4fc] font-semibold">
               {out1Prefix.slice(0, Math.min(out1Chars, out1Prefix.length))}
             </span>
@@ -380,7 +380,7 @@ export default function TerminalWindow({
           return (
             <p
               key={idx}
-              className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-mono mt-1"
+              className="text-neutral-300 leading-relaxed font-mono mt-1"
             >
               <span>{para.slice(0, typedChars)}</span>
               {isCurrentlyActive && <span className="terminal-caret" aria-hidden="true" />}

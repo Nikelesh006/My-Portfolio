@@ -24,6 +24,17 @@ html {
   box-sizing: border-box;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+}
+
+#home,
+#experience {
+  scroll-margin-top: clamp(64px, 7.5vh, 80px);
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -62,7 +73,7 @@ body {
 /* Hero Proportions & Responsive Layout */
 .hero-name-wrapper {
   position: relative;
-  width: 94vw;
+  width: 96vw;
   margin: 1rem auto 0;
   height: clamp(140px, 22vh, 240px);
   min-height: clamp(140px, 22vh, 240px);
@@ -81,10 +92,10 @@ body {
     top: 22vh;
     left: 50%;
     transform: translateX(-50%);
-    width: 92vw;
+    width: 96vw;
     margin: 0;
-    height: clamp(220px, 32vh, 520px);
-    min-height: clamp(220px, 32vh, 520px);
+    height: clamp(220px, 34vh, 520px);
+    min-height: clamp(220px, 34vh, 520px);
   }
 }
 

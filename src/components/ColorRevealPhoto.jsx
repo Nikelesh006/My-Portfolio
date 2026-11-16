@@ -54,13 +54,13 @@ export default function ColorRevealPhoto({
         const isStill = timeSinceMove >= 0.15;
 
         if (isStill) {
-          // Cursor is kept on the image -> bloom smoothly to full color image within 1.5s total
+          // Cursor is kept on the image -> bloom smoothly to full color image within 2.0s total (+0.5s added)
           if (!stillStartRef.current) {
             stillStartRef.current = now;
           }
           const stillElapsed = (now - stillStartRef.current) / 1000;
-          // Smooth reveal over 1.2s (total elapsed with 0.15s threshold = ~1.35s-1.5s)
-          const expandDuration = 1.2;
+          // Smooth reveal over 1.7s (total elapsed with 0.15s threshold = ~1.85s-2.0s)
+          const expandDuration = 1.7;
           const progress = Math.min(1, Math.max(0, stillElapsed / expandDuration));
           // Smoothstep easing: gentle acceleration, smooth finish
           const ease = progress * progress * (3 - 2 * progress);
