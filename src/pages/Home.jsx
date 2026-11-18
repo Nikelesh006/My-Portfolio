@@ -7,6 +7,7 @@ import FluxLines from '../components/FluxLines';
 import TerminalWindow from '../components/TerminalWindow';
 import ExperienceHeading from '../components/ExperienceHeading';
 import CometDial from '../components/CometDial';
+import AboutSection from '../components/AboutSection';
 import { playClickSound } from '../lib/navigation';
 import mePhoto from '../assets/me.png';
 
@@ -155,20 +156,23 @@ export default function Home() {
       const scrollY = window.scrollY;
       setIsScrolled(scrollY > 80);
 
+      const aboutEl = document.getElementById('about');
       const expEl = document.getElementById('experience');
-      if (expEl) {
-        const rect = expEl.getBoundingClientRect();
-        // If experience section's top is within 45% of viewport height, mark Experience as active
-        if (rect.top <= window.innerHeight * 0.45) {
-          setActiveSection('experience');
-          if (window.location.hash !== '#experience') {
-            window.history.replaceState(null, '', '#experience');
-          }
-        } else {
-          setActiveSection('home');
-          if (window.location.hash === '#experience') {
-            window.history.replaceState(null, '', '#home');
-          }
+
+      if (expEl && expEl.getBoundingClientRect().top <= window.innerHeight * 0.45) {
+        setActiveSection('experience');
+        if (window.location.hash !== '#experience') {
+          window.history.replaceState(null, '', '#experience');
+        }
+      } else if (aboutEl && aboutEl.getBoundingClientRect().top <= window.innerHeight * 0.45) {
+        setActiveSection('about');
+        if (window.location.hash !== '#about') {
+          window.history.replaceState(null, '', '#about');
+        }
+      } else {
+        setActiveSection('home');
+        if (window.location.hash === '#experience' || window.location.hash === '#about') {
+          window.history.replaceState(null, '', '#home');
         }
       }
     };
@@ -178,7 +182,7 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Handle direct loads to /#experience or /experience
+  // Handle direct loads to /#about, /#experience or /experience
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const path = window.location.pathname.toLowerCase();
@@ -186,19 +190,33 @@ export default function Home() {
 
     if (path === '/experience' || path === '/experience/') {
       window.history.replaceState(null, '', '/#experience');
+    } else if (path === '/about' || path === '/about/') {
+      window.history.replaceState(null, '', '/#about');
     }
 
     if (hash === '#experience' || path === '/experience' || path === '/experience/') {
       setActiveSection('experience');
       const scrollToExp = () => {
         const el = document.getElementById('experience');
-        if (el) {
-          el.scrollIntoView({ behavior: 'auto' });
-        }
+        if (el) el.scrollIntoView({ behavior: 'auto' });
       };
       const t1 = setTimeout(scrollToExp, 60);
       const t2 = setTimeout(scrollToExp, 250);
       const t3 = setTimeout(scrollToExp, 600);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
+    } else if (hash === '#about' || path === '/about' || path === '/about/') {
+      setActiveSection('about');
+      const scrollToAbout = () => {
+        const el = document.getElementById('about');
+        if (el) el.scrollIntoView({ behavior: 'auto' });
+      };
+      const t1 = setTimeout(scrollToAbout, 60);
+      const t2 = setTimeout(scrollToAbout, 250);
+      const t3 = setTimeout(scrollToAbout, 600);
       return () => {
         clearTimeout(t1);
         clearTimeout(t2);
@@ -215,6 +233,9 @@ export default function Home() {
       const hash = window.location.hash.toLowerCase();
       if (hash === '#experience') {
         const el = document.getElementById('experience');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      } else if (hash === '#about') {
+        const el = document.getElementById('about');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       } else if (hash === '#home' || !hash) {
         const el = document.getElementById('home');
@@ -339,6 +360,17 @@ export default function Home() {
           </button>
           <button
             type="button"
+            onClick={() => scrollToSection('about')}
+            className={`cursor-pointer transition-colors ${
+              activeSection === 'about'
+                ? 'text-black font-bold border-b-2 border-black pb-0.5'
+                : 'text-neutral-600 hover:text-black'
+            }`}
+          >
+            About
+          </button>
+          <button
+            type="button"
             onClick={() => scrollToSection('experience')}
             className={`cursor-pointer transition-colors flex items-center gap-1 ${
               activeSection === 'experience'
@@ -409,6 +441,7 @@ export default function Home() {
           <nav className="flex flex-col gap-5 py-6">
             {[
               { label: 'Home', id: 'home', active: activeSection === 'home' },
+              { label: 'About', id: 'about', active: activeSection === 'about' },
               { label: 'Experience', id: 'experience', count: '1+', active: activeSection === 'experience' }
             ].map((item) => (
               <button
@@ -609,7 +642,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ================= SECTION 2: EXPERIENCE ================= */}
+      {/* ================= SECTION 2: ABOUT ================= */}
+      <AboutSection />
+
+      {/* ================= SECTION 3: EXPERIENCE ================= */}
       <section
         id="experience"
         className="relative w-full min-h-[100dvh] bg-white flex flex-col items-start justify-start px-[4vw] pt-[clamp(88px,11.5vh,130px)] pb-[clamp(48px,8vh,96px)]"
