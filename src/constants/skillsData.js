@@ -8,15 +8,15 @@ export const HEADLINE = "Turning ideas into working systems. Walk through the st
  * SKILL_CATEGORIES configuration for the 3D Loft Gallery and 2D List fallback
  * Edit this array to add, remove, or modify categories, skills, and ratings.
  *
- * Ground Floor (Y = 0):
- * - Backend: West wall (X = -14.92, Y = 1.9, Z = 1.0)
- * - Frontend: South wall (X = -3.0, Y = 1.9, Z = 9.92)
- * - Databases: West wall further back under mezzanine (X = -14.92, Y = 1.9, Z = -6.5)
+ * Ground Floor (Y = 0, panels centered at Y = 1.75m):
+ * - Backend: West wall (X = -10.42, Y = 1.75, Z = 1.5)
+ * - Frontend: South wall (X = -1.0, Y = 1.75, Z = 6.92)
+ * - Databases: West wall further back under mezzanine (X = -10.42, Y = 1.75, Z = -4.75)
  *
- * Upper Floor / Mezzanine (Y = 3.6):
- * - DevOps: Back North wall left (X = -8.0, Y = 5.5, Z = -9.92)
- * - AI: Back North wall center (X = 0.0, Y = 5.5, Z = -9.92)
- * - Tools: Back North wall right (X = 8.0, Y = 5.5, Z = -9.92)
+ * Upper Floor / Mezzanine (Y = 3.0, panels centered at Y = 4.75m):
+ * - DevOps: Back North wall left (X = -5.5, Y = 4.75, Z = -6.92)
+ * - AI: Back North wall center (X = 0.0, Y = 4.75, Z = -6.92)
+ * - Tools: Back North wall right (X = 5.5, Y = 4.75, Z = -6.92)
  */
 export const SKILL_CATEGORIES = [
   {
@@ -26,10 +26,10 @@ export const SKILL_CATEGORIES = [
     color: '#3b82f6',
     wall: 'west',
     floor: 0,
-    position: [-14.92, 1.9, 1.0],
+    position: [-10.42, 1.75, 1.5],
     rotation: [0, Math.PI / 2, 0],
-    inspectCam: [-11.45, 1.9, 1.0],
-    inspectTarget: [-14.92, 1.9, 1.0],
+    inspectCam: [-7.62, 1.75, 1.5],
+    inspectTarget: [-10.42, 1.75, 1.5],
     tags: ['Node.js', 'Express', 'Fastify', 'REST APIs', 'TypeScript'],
     skills: [
       { name: 'Node.js', level: 94 },
@@ -46,10 +46,10 @@ export const SKILL_CATEGORIES = [
     color: '#8b5cf6',
     wall: 'south',
     floor: 0,
-    position: [-3.0, 1.9, 9.92],
+    position: [-1.0, 1.75, 6.92],
     rotation: [0, Math.PI, 0],
-    inspectCam: [-3.0, 1.9, 6.45],
-    inspectTarget: [-3.0, 1.9, 9.92],
+    inspectCam: [-1.0, 1.75, 4.12],
+    inspectTarget: [-1.0, 1.75, 6.92],
     tags: ['React', 'Next.js', 'Tailwind CSS', 'HTML/CSS'],
     skills: [
       { name: 'React', level: 90 },
@@ -65,10 +65,10 @@ export const SKILL_CATEGORIES = [
     color: '#10b981',
     wall: 'west-back',
     floor: 0,
-    position: [-14.92, 1.9, -6.5],
+    position: [-10.42, 1.75, -4.75],
     rotation: [0, Math.PI / 2, 0],
-    inspectCam: [-11.45, 1.9, -6.5],
-    inspectTarget: [-14.92, 1.9, -6.5],
+    inspectCam: [-7.62, 1.75, -4.75],
+    inspectTarget: [-10.42, 1.75, -4.75],
     tags: ['PostgreSQL', 'MongoDB', 'Supabase', 'Prisma', 'Redis'],
     skills: [
       { name: 'PostgreSQL', level: 90 },
@@ -84,10 +84,10 @@ export const SKILL_CATEGORIES = [
     color: '#f59e0b',
     wall: 'mezzanine-back-left',
     floor: 1,
-    position: [-8.0, 5.5, -9.92],
+    position: [-5.5, 4.75, -6.92],
     rotation: [0, 0, 0],
-    inspectCam: [-8.0, 5.5, -6.45],
-    inspectTarget: [-8.0, 5.5, -9.92],
+    inspectCam: [-5.5, 4.75, -4.12],
+    inspectTarget: [-5.5, 4.75, -6.92],
     tags: ['Docker', 'Kubernetes', 'Jenkins', 'GitHub Actions', 'CI/CD'],
     skills: [
       { name: 'Docker Containerization', level: 90 },
@@ -103,10 +103,10 @@ export const SKILL_CATEGORIES = [
     color: '#ec4899',
     wall: 'mezzanine-back-center',
     floor: 1,
-    position: [0.0, 5.5, -9.92],
+    position: [0.0, 4.75, -6.92],
     rotation: [0, 0, 0],
-    inspectCam: [0.0, 5.5, -6.45],
-    inspectTarget: [0.0, 5.5, -9.92],
+    inspectCam: [0.0, 4.75, -4.12],
+    inspectTarget: [0.0, 4.75, -6.92],
     tags: ['AI Architectures', 'LLM Integration', 'Prompt Engineering', 'Workflows'],
     skills: [
       { name: 'LLM APIs & Tool Calling', level: 85 },
@@ -121,10 +121,10 @@ export const SKILL_CATEGORIES = [
     color: '#06b6d4',
     wall: 'mezzanine-back-right',
     floor: 1,
-    position: [8.0, 5.5, -9.92],
+    position: [5.5, 4.75, -6.92],
     rotation: [0, 0, 0],
-    inspectCam: [8.0, 5.5, -6.45],
-    inspectTarget: [8.0, 5.5, -9.92],
+    inspectCam: [5.5, 4.75, -4.12],
+    inspectTarget: [5.5, 4.75, -6.92],
     tags: ['Git', 'GitHub', 'Postman', 'VS Code'],
     skills: [
       { name: 'Git & Version Control', level: 94 },

@@ -10,47 +10,52 @@ import { X, ArrowLeft, ShieldCheck, Compass } from 'lucide-react';
  * TWO-LEVEL LOFT ARCHITECTURE CONSTANTS (Meters)
  * ============================================================================
  */
-// 1. Main Hall Dimensions
-export const ROOM_WIDTH = 30;       // X: -15 to +15 (West to East)
-export const ROOM_DEPTH = 20;       // Z: -10 to +10 (North to South)
-export const ROOM_HEIGHT = 9;       // Y: 0 to 9 (Floor to Ceiling)
-export const WALL_CLEARANCE = 0.45; // 0.45m clearance from outer walls
+// 1. Main Hall Dimensions (Smaller Room: 21m W x 14m D x 6.5m H)
+export const ROOM_WIDTH = 21;       // X: -10.5 to +10.5 (West to East)
+export const ROOM_DEPTH = 14;       // Z: -7.0 to +7.0 (North to South)
+export const ROOM_HEIGHT = 6.5;     // Y: 0 to 6.5 (Floor to Ceiling)
+export const WALL_CLEARANCE = 0.4;  // 0.4m clearance from outer walls
 
 // 2. Mezzanine Dimensions (Upper Floor)
-export const MEZZANINE_WIDTH = 30;     // X: -15 to +15
-export const MEZZANINE_DEPTH = 6;      // Z: -10 to -4 (along North wall)
-export const MEZZANINE_HEIGHT = 3.6;   // Top surface Y = 3.6m
-export const MEZZANINE_THICKNESS = 0.3;// Slab thickness 0.3m (bottom at Y = 3.3m)
-export const MEZZANINE_RAIL_H = 1.1;   // Railing height = 1.1m (Y = 3.6 to 4.7)
-export const MEZZANINE_Z_FRONT = -4.0; // Front edge of mezzanine slab
-export const MEZZANINE_Z_BACK = -10.0; // Back edge against North wall
+export const MEZZANINE_WIDTH = 21;     // X: -10.5 to +10.5 (Spans full width)
+export const MEZZANINE_DEPTH = 4.5;    // Z: -7.0 to -2.5 (along North wall)
+export const MEZZANINE_HEIGHT = 3.0;   // Top surface Y = 3.0m
+export const MEZZANINE_THICKNESS = 0.25; // Slab thickness 0.25m (ceiling under it is 2.8m, clear at eye height 1.65m)
+export const MEZZANINE_RAIL_H = 1.1;   // Railing height = 1.1m (Y = 3.0 to 4.1)
+export const MEZZANINE_Z_FRONT = -2.5; // Front edge of mezzanine slab
+export const MEZZANINE_Z_BACK = -7.0;  // Back edge against North wall
 
-// 3. Staircase Dimensions (East Wall)
-export const STAIR_WIDTH = 1.6;        // Width across X: 13.2 to 14.8
-export const STAIR_RUN = 9.0;          // Run along Z: +5.0 (bottom) to -4.0 (top)
-export const STAIR_RISE = 3.6;         // Rise Y: 0 to 3.6m
-export const STAIR_STEPS_COUNT = 20;   // 20 steps (0.18m rise, 0.45m run)
-export const STAIR_X_MIN = 13.2;
-export const STAIR_X_MAX = 14.8;
-export const STAIR_Z_START = 5.0;      // Foot of stairs
-export const STAIR_Z_END = -4.0;       // Top landing onto mezzanine
+// 3. Staircase Dimensions (East Wall - Single Straight Flight, All White)
+export const STAIR_WIDTH = 1.4;        // Width across X: 9.05 to 10.45
+export const STAIR_RUN = 7.14;         // Run along Z: +4.64 (bottom) to -2.5 (top landing)
+export const STAIR_RISE = 3.0;         // Rise Y: 0 to 3.0m
+export const STAIR_STEPS_COUNT = 17;   // 17 steps (0.176m rise, 0.42m run)
+export const STAIR_X_MIN = 9.05;       // Open side stringer
+export const STAIR_X_MAX = 10.45;      // Wall side stringer
+export const STAIR_Z_START = 4.64;     // Foot of stairs on ground floor
+export const STAIR_Z_END = -2.5;       // Top landing onto mezzanine
 
-// 4. Central Plinth Location (Ground Floor)
-export const PLINTH_X = 0;
-export const PLINTH_Z = 2.0;
+// 4. The ONLY Column / Pillar (Single Slim Square Column, 0.4m x 0.4m, White)
+export const PILLAR_X = 0.0;
+export const PILLAR_Z = -2.5;          // At center of mezzanine front edge
+export const PILLAR_SIZE = 0.4;
 
-// 5. Player & Movement Constants
+// 5. Central Plinth Location (Ground Floor, Scaled Down by 25%)
+export const PLINTH_X = 0.0;
+export const PLINTH_Z = 1.6;           // Centered in ground hall, clear of stairs
+
+// 6. Player & Movement Constants
 export const EYE_HEIGHT_OFFSET = 1.65; // Eye height above floor level (1.65m)
-export const WALK_SPEED = 3.2;         // Normal walking speed (m/s)
-export const STAIR_SPEED = 1.6;        // Speed on stairs (m/s)
-export const SPAWN_POS = [0, EYE_HEIGHT_OFFSET, 7.5]; // Near South entrance facing North
+export const WALK_SPEED = 2.6;         // Normal walking speed on flat (2.6 m/s)
+export const STAIR_SPEED = 1.5;        // Speed on stairs (1.5 m/s)
+export const SPAWN_POS = [0, EYE_HEIGHT_OFFSET, 5.0]; // Near South entrance facing North
 
-// 6. Preview Camera Constants (Interior Wide Loft Shot)
-export const PREVIEW_CAM_POS = [-10.5, EYE_HEIGHT_OFFSET, 7.5];
-export const PREVIEW_CAM_TARGET = [3.5, 3.4, -4.0];
-export const PREVIEW_DRIFT_AMP = 0.2;
+// 7. Preview Camera Constants (Smaller Room Interior View)
+export const PREVIEW_CAM_POS = [-7.2, EYE_HEIGHT_OFFSET, 5.0];
+export const PREVIEW_CAM_TARGET = [2.4, 2.4, -2.5];
+export const PREVIEW_DRIFT_AMP = 0.16;
 export const PREVIEW_DRIFT_PERIOD = 20;
-export const PREVIEW_PARALLAX_MAX_DEG = 2.0;
+export const PREVIEW_PARALLAX_MAX_DEG = 1.8;
 
 /**
  * ============================================================================
@@ -61,12 +66,12 @@ export const PREVIEW_PARALLAX_MAX_DEG = 2.0;
 /**
  * Returns ground floor height under player at coordinates (x, z):
  * - 0 on ground floor
- * - linear ramp from 0 to 3.6 along stair run [Z: 5.0 to -4.0, X: 13.1 to 14.9]
- * - 3.6 on mezzanine slab [Z: -10 to -4]
+ * - linear ramp from 0 to 3.0 along stair run [Z: 4.64 to -2.5, X: 8.95 to 10.55]
+ * - 3.0 on mezzanine slab [Z: -7.0 to -2.5]
  * - null if outside room bounds
  */
 export function groundHeightAt(x, z, currentY = 0) {
-  // 1. Outer room bounds with 0.45m clearance
+  // 1. Outer room bounds with 0.4m clearance
   const minX = -ROOM_WIDTH / 2 + WALL_CLEARANCE;
   const maxX = ROOM_WIDTH / 2 - WALL_CLEARANCE;
   const minZ = -ROOM_DEPTH / 2 + WALL_CLEARANCE;
@@ -76,18 +81,18 @@ export function groundHeightAt(x, z, currentY = 0) {
     return null; // Out of bounds
   }
 
-  // 2. Stairway flight: X in [13.1, 14.9], Z in [-4.0, 5.0]
+  // 2. Stairway flight: X in [STAIR_X_MIN - 0.1, STAIR_X_MAX + 0.1], Z in [STAIR_Z_END, STAIR_Z_START]
   if (x >= STAIR_X_MIN - 0.1 && x <= STAIR_X_MAX + 0.1 && z >= STAIR_Z_END && z <= STAIR_Z_START) {
     const t = (STAIR_Z_START - z) / STAIR_RUN;
     return THREE.MathUtils.clamp(t * STAIR_RISE, 0, STAIR_RISE);
   }
 
-  // 3. Mezzanine slab (North side): Z in [-10, -4.0]
+  // 3. Mezzanine slab (North side): Z in [-7.0, -2.5]
   if (z <= MEZZANINE_Z_FRONT) {
-    if (currentY >= 2.0) {
-      return MEZZANINE_HEIGHT; // Upper floor
+    if (currentY >= 1.8) {
+      return MEZZANINE_HEIGHT; // Upper floor (3.0m)
     }
-    return 0.0; // Ground floor under mezzanine (ceiling is 3.3m)
+    return 0.0; // Ground floor under mezzanine (ceiling is 2.8m)
   }
 
   // 4. Ground floor main hall
@@ -98,38 +103,39 @@ export function groundHeightAt(x, z, currentY = 0) {
  * Two-level collision check with AABB blockers:
  * - Mezzanine front railing (blocks falling off front edge)
  * - Stair stringers & open-side railing (blocks entering/falling from sides)
- * - Mezzanine columns & ground floor plinth
+ * - The ONE white pillar at [0, -2.5]
+ * - Ground floor central plinth at [0, 1.6]
  */
 export function checkCollision(x, z, currentY) {
   // Check room bounds and ground height
   const gh = groundHeightAt(x, z, currentY);
   if (gh === null) return true;
 
-  const isUpper = currentY >= 2.0;
+  const isUpper = currentY >= 1.8;
 
   if (isUpper) {
     // On Upper floor:
-    // Front railing blocks crossing Z > -4.45 unless inside the stair entrance [13.0, 15.0]
+    // Front railing blocks crossing Z > -2.9 unless inside the stair entrance [STAIR_X_MIN - 0.2, STAIR_X_MAX + 0.2]
     if (z > MEZZANINE_Z_FRONT - WALL_CLEARANCE && (x < STAIR_X_MIN - 0.2 || x > STAIR_X_MAX + 0.2)) {
       return true; // Blocked by mezzanine railing
     }
   } else {
     // On Ground floor:
-    // Cannot walk through side of stairs (open side stringer at X = 13.2, Z from -4.0 to 4.8)
-    if (x >= STAIR_X_MIN - WALL_CLEARANCE && x <= STAIR_X_MIN + 0.2 && z >= STAIR_Z_END && z <= STAIR_Z_START - 0.2) {
+    // 1. Cannot walk through side of stairs (open side stringer at X = 9.05, Z from -2.5 to 4.44)
+    if (x >= STAIR_X_MIN - WALL_CLEARANCE && x <= STAIR_X_MIN + 0.15 && z >= STAIR_Z_END && z <= STAIR_Z_START - 0.2) {
       return true; // Blocked by stair stringer/railing
     }
 
-    // 3 Mezzanine support columns along front edge (Z = -4.0)
-    const columnsX = [-8.0, 0.0, 7.5];
-    for (const cx of columnsX) {
-      if (Math.hypot(x - cx, z - (-4.0)) < 0.45) {
-        return true; // Blocked by column
-      }
+    // 2. The ONE white pillar (0.4m x 0.4m at X = 0, Z = -2.5) with 0.4m clearance
+    if (
+      Math.abs(x - PILLAR_X) < PILLAR_SIZE / 2 + WALL_CLEARANCE &&
+      Math.abs(z - PILLAR_Z) < PILLAR_SIZE / 2 + WALL_CLEARANCE
+    ) {
+      return true; // Blocked by the one pillar
     }
 
-    // Ground floor central plinth at [0, 2.0]
-    if (Math.hypot(x - PLINTH_X, z - PLINTH_Z) < 1.05) {
+    // 3. Ground floor central plinth at [0, 1.6]
+    if (Math.hypot(x - PLINTH_X, z - PLINTH_Z) < 0.57 + WALL_CLEARANCE) {
       return true; // Blocked by central plinth
     }
   }
@@ -206,15 +212,20 @@ export function TouchDragIcon({ className = 'w-8 h-8' }) {
 }
 
 /**
- * Instanced Staircase Steps & Open-Side Railing along East Wall
+ * Instanced Staircase Steps & Open-Side Railing along East Wall (ALL WHITE)
+ * Features:
+ * - Clean white treads (#ffffff, roughness 0.85) and risers/stringers/railings (#f4f4f2, roughness 0.85)
+ * - Faint darker edge line (#dcdcd8) on each tread's front edge for definition
+ * - Soft contact-shadow decal under the stair flight and along the East wall
  */
 function Staircase() {
   const stepsMeshRef = useRef();
+  const edgeLinesMeshRef = useRef();
   const balustersMeshRef = useRef();
 
-  // Create steps using InstancedMesh
+  // Create steps using InstancedMesh (17 steps)
   useLayoutEffect(() => {
-    if (!stepsMeshRef.current) return;
+    if (!stepsMeshRef.current || !edgeLinesMeshRef.current) return;
     const tempMatrix = new THREE.Matrix4();
     const tempPos = new THREE.Vector3();
     const tempRot = new THREE.Euler(0, 0, 0);
@@ -223,23 +234,30 @@ function Staircase() {
     for (let i = 0; i < STAIR_STEPS_COUNT; i++) {
       const z = STAIR_Z_START - (i + 0.5) * (STAIR_RUN / STAIR_STEPS_COUNT);
       const y = (i + 1) * (STAIR_RISE / STAIR_STEPS_COUNT);
-      const x = (STAIR_X_MIN + STAIR_X_MAX) / 2; // X = 14.0
+      const x = (STAIR_X_MIN + STAIR_X_MAX) / 2; // Center X = 9.75
 
+      // Main White Step Tread
       tempPos.set(x, y - 0.02, z);
       tempMatrix.compose(tempPos, new THREE.Quaternion().setFromEuler(tempRot), tempScale);
       stepsMeshRef.current.setMatrixAt(i, tempMatrix);
+
+      // Faint Darker Nosing Edge Line on front edge of each tread
+      tempPos.set(x, y - 0.019, z + 0.44 / 2 - 0.008);
+      tempMatrix.compose(tempPos, new THREE.Quaternion().setFromEuler(tempRot), tempScale);
+      edgeLinesMeshRef.current.setMatrixAt(i, tempMatrix);
     }
     stepsMeshRef.current.instanceMatrix.needsUpdate = true;
+    edgeLinesMeshRef.current.instanceMatrix.needsUpdate = true;
   }, []);
 
-  // Instanced balusters on the open side of stairs (X = 13.2)
+  // Instanced balusters on the open side of stairs (X = STAIR_X_MIN = 9.05)
   useLayoutEffect(() => {
     if (!balustersMeshRef.current) return;
     const tempMatrix = new THREE.Matrix4();
     const tempPos = new THREE.Vector3();
     const tempRot = new THREE.Euler(0, 0, 0);
     const tempScale = new THREE.Vector3(1, 1, 1);
-    const count = 30;
+    const count = 26;
 
     for (let i = 0; i < count; i++) {
       const t = i / (count - 1);
@@ -260,73 +278,103 @@ function Staircase() {
 
   return (
     <group>
-      {/* 20 Instanced Steps */}
+      {/* 17 Instanced White Step Treads (#ffffff) */}
       <instancedMesh
         ref={stepsMeshRef}
         args={[null, null, STAIR_STEPS_COUNT]}
         castShadow
         receiveShadow
       >
-        <boxGeometry args={[STAIR_WIDTH, 0.04, 0.48]} />
-        <meshStandardMaterial color="#cbd5e1" roughness={0.3} metalness={0.4} />
+        <boxGeometry args={[STAIR_WIDTH, 0.04, 0.44]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.85} metalness={0.0} />
       </instancedMesh>
 
-      {/* Slim Steel Stringer on Wall Side (X = 14.8) */}
+      {/* 17 Instanced Subtle Darker Front Edge Lines (#dcdcd8, ~1-2px equivalent) */}
+      <instancedMesh
+        ref={edgeLinesMeshRef}
+        args={[null, null, STAIR_STEPS_COUNT]}
+      >
+        <boxGeometry args={[STAIR_WIDTH, 0.042, 0.016]} />
+        <meshStandardMaterial color="#dcdcd8" roughness={0.85} metalness={0.0} />
+      </instancedMesh>
+
+      {/* Slim Clean White Stringer on Wall Side (X = 10.45) */}
       <mesh
         position={[STAIR_X_MAX, STAIR_RISE / 2, (STAIR_Z_START + STAIR_Z_END) / 2]}
         rotation={[slopeAngle, 0, 0]}
         castShadow
       >
-        <boxGeometry args={[0.06, 0.22, stringerLength]} />
-        <meshStandardMaterial color="#475569" roughness={0.4} metalness={0.5} />
+        <boxGeometry args={[0.05, 0.22, stringerLength]} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
       </mesh>
 
-      {/* Slim Steel Stringer on Open Side (X = 13.2) */}
+      {/* Slim Clean White Stringer on Open Side (X = 9.05) */}
       <mesh
         position={[STAIR_X_MIN, STAIR_RISE / 2, (STAIR_Z_START + STAIR_Z_END) / 2]}
         rotation={[slopeAngle, 0, 0]}
         castShadow
       >
-        <boxGeometry args={[0.06, 0.22, stringerLength]} />
-        <meshStandardMaterial color="#475569" roughness={0.4} metalness={0.5} />
+        <boxGeometry args={[0.05, 0.22, stringerLength]} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
       </mesh>
 
-      {/* Handrail on Open Side (Height 1.05m above stair slope) */}
+      {/* Handrail on Open Side (Clean White, Height 1.05m above stair slope) */}
       <mesh
         position={[STAIR_X_MIN, STAIR_RISE / 2 + 1.05, (STAIR_Z_START + STAIR_Z_END) / 2]}
         rotation={[slopeAngle, 0, 0]}
       >
-        <boxGeometry args={[0.04, 0.04, stringerLength + 0.2]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.2} metalness={0.7} />
+        <boxGeometry args={[0.04, 0.04, stringerLength + 0.15]} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
       </mesh>
 
-      {/* Instanced Balusters on Open Side */}
-      <instancedMesh ref={balustersMeshRef} args={[null, null, 30]}>
+      {/* Instanced Balusters on Open Side (Clean White) */}
+      <instancedMesh ref={balustersMeshRef} args={[null, null, 26]}>
         <cylinderGeometry args={[0.01, 0.01, 0.95, 8]} />
-        <meshStandardMaterial color="#64748b" roughness={0.4} metalness={0.5} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
       </instancedMesh>
 
-      {/* Stair Starting Post & Landing Post */}
+      {/* Stair Starting Post & Landing Post (Clean White) */}
       <mesh position={[STAIR_X_MIN, 0.55, STAIR_Z_START]}>
-        <boxGeometry args={[0.06, 1.1, 0.06]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.6} />
+        <boxGeometry args={[0.05, 1.1, 0.05]} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
       </mesh>
       <mesh position={[STAIR_X_MIN, STAIR_RISE + 0.55, STAIR_Z_END]}>
-        <boxGeometry args={[0.06, 1.1, 0.06]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.6} />
+        <boxGeometry args={[0.05, 1.1, 0.05]} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
+      </mesh>
+
+      {/* Soft Contact Shadow Decal Under Stair Flight */}
+      <mesh
+        position={[(STAIR_X_MIN + STAIR_X_MAX) / 2, 0.01, (STAIR_Z_START + STAIR_Z_END) / 2]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <planeGeometry args={[STAIR_WIDTH + 0.25, STAIR_RUN]} />
+        <meshBasicMaterial color="#000000" opacity={0.16} transparent />
+      </mesh>
+
+      {/* Subtle Shadow Gradient Decal Along East Wall Beside Stairs */}
+      <mesh
+        position={[STAIR_X_MAX - 0.01, STAIR_RISE / 2, (STAIR_Z_START + STAIR_Z_END) / 2]}
+        rotation={[0, -Math.PI / 2, slopeAngle]}
+      >
+        <planeGeometry args={[stringerLength, 0.45]} />
+        <meshBasicMaterial color="#000000" opacity={0.12} transparent />
       </mesh>
     </group>
   );
 }
 
 /**
- * Mezzanine Front Railing with Instanced Balusters (Along Z = -4.0)
+ * Mezzanine Front Railing with Instanced Balusters (Along Z = -2.5, All Clean White)
  */
 function MezzanineRailing() {
   const balustersRef = useRef();
-  const railLength = 28.0; // From X = -15.0 to X = 13.0 (leaves stair opening 13.0 to 15.0)
-  const railCenterX = -1.0;
-  const count = 160;
+  // Rail runs from West wall (X = -10.3) to Stair opening (X = 8.85)
+  const railStart = -ROOM_WIDTH / 2 + 0.2; // -10.3
+  const railEnd = STAIR_X_MIN - 0.2;       // 8.85
+  const railLength = railEnd - railStart;  // 19.15m
+  const railCenterX = (railStart + railEnd) / 2; // -0.725m
+  const count = 110;
 
   useLayoutEffect(() => {
     if (!balustersRef.current) return;
@@ -337,39 +385,39 @@ function MezzanineRailing() {
 
     for (let i = 0; i < count; i++) {
       const t = i / (count - 1);
-      const x = THREE.MathUtils.lerp(-14.8, 12.8, t);
+      const x = THREE.MathUtils.lerp(railStart + 0.1, railEnd - 0.1, t);
       tempPos.set(x, MEZZANINE_HEIGHT + 0.55, MEZZANINE_Z_FRONT);
       tempMatrix.compose(tempPos, new THREE.Quaternion().setFromEuler(tempRot), tempScale);
       balustersRef.current.setMatrixAt(i, tempMatrix);
     }
     balustersRef.current.instanceMatrix.needsUpdate = true;
-  }, []);
+  }, [railStart, railEnd]);
 
   return (
     <group>
-      {/* Top Handrail */}
+      {/* Top Handrail (Clean White #f4f4f2) */}
       <mesh position={[railCenterX, MEZZANINE_HEIGHT + MEZZANINE_RAIL_H - 0.02, MEZZANINE_Z_FRONT]}>
         <boxGeometry args={[railLength, 0.04, 0.04]} />
-        <meshStandardMaterial color="#1e293b" roughness={0.2} metalness={0.7} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
       </mesh>
 
-      {/* Bottom Base Rail */}
+      {/* Bottom Base Rail (Clean White #f4f4f2) */}
       <mesh position={[railCenterX, MEZZANINE_HEIGHT + 0.05, MEZZANINE_Z_FRONT]}>
         <boxGeometry args={[railLength, 0.04, 0.04]} />
-        <meshStandardMaterial color="#475569" roughness={0.3} metalness={0.5} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
       </mesh>
 
-      {/* Instanced Balusters */}
+      {/* Instanced Balusters (Clean White #f4f4f2) */}
       <instancedMesh ref={balustersRef} args={[null, null, count]}>
-        <cylinderGeometry args={[0.012, 0.012, 1.0, 8]} />
-        <meshStandardMaterial color="#64748b" roughness={0.4} metalness={0.5} />
+        <cylinderGeometry args={[0.01, 0.01, 1.0, 8]} />
+        <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
       </instancedMesh>
 
-      {/* Structural Posts spaced along railing */}
-      {[-14.8, -10.0, -5.0, 0.0, 5.0, 10.0, 12.8].map((px) => (
+      {/* Structural Posts spaced along railing (Clean White #f4f4f2) */}
+      {[-10.3, -6.8, -3.4, 0.0, 3.4, 6.8, 8.85].map((px) => (
         <mesh key={px} position={[px, MEZZANINE_HEIGHT + 0.55, MEZZANINE_Z_FRONT]}>
-          <boxGeometry args={[0.06, 1.1, 0.06]} />
-          <meshStandardMaterial color="#1e293b" roughness={0.3} metalness={0.6} />
+          <boxGeometry args={[0.05, 1.1, 0.05]} />
+          <meshStandardMaterial color="#f4f4f2" roughness={0.85} metalness={0.0} />
         </mesh>
       ))}
     </group>
@@ -377,39 +425,39 @@ function MezzanineRailing() {
 }
 
 /**
- * Exposed Steel Roof Trusses Spanning Hall at Y = 8.4m
+ * Exposed Steel Roof Trusses Spanning Hall at Y = 6.0m (Reduced to 3 trusses)
  */
 function RoofTrusses() {
-  const trussZPositions = useMemo(() => [-8.0, -4.5, -1.0, 2.5, 6.0, 9.0], []);
+  const trussZPositions = useMemo(() => [-4.5, 0.0, 4.0], []);
 
   return (
     <group>
-      {/* 6 Steel Trusses */}
+      {/* 3 Steel Trusses across Hall Width (21m) */}
       {trussZPositions.map((tz, idx) => (
-        <group key={idx} position={[0, 8.4, tz]}>
+        <group key={idx} position={[0, 6.0, tz]}>
           {/* Top Chord */}
-          <mesh position={[0, 0.38, 0]}>
-            <boxGeometry args={[ROOM_WIDTH, 0.1, 0.1]} />
-            <meshStandardMaterial color="#94a3b8" roughness={0.4} metalness={0.5} />
+          <mesh position={[0, 0.28, 0]}>
+            <boxGeometry args={[ROOM_WIDTH, 0.08, 0.08]} />
+            <meshStandardMaterial color="#cbd5e1" roughness={0.4} metalness={0.4} />
           </mesh>
           {/* Bottom Chord */}
-          <mesh position={[0, -0.38, 0]}>
-            <boxGeometry args={[ROOM_WIDTH, 0.1, 0.1]} />
-            <meshStandardMaterial color="#94a3b8" roughness={0.4} metalness={0.5} />
+          <mesh position={[0, -0.28, 0]}>
+            <boxGeometry args={[ROOM_WIDTH, 0.08, 0.08]} />
+            <meshStandardMaterial color="#cbd5e1" roughness={0.4} metalness={0.4} />
           </mesh>
           {/* Vertical and Diagonal Struts */}
-          {[-12, -9, -6, -3, 0, 3, 6, 9, 12].map((sx) => (
+          {[-8, -6, -4, -2, 0, 2, 4, 6, 8].map((sx) => (
             <group key={sx}>
               {/* Vertical Web */}
               <mesh position={[sx, 0, 0]}>
-                <boxGeometry args={[0.06, 0.76, 0.06]} />
-                <meshStandardMaterial color="#94a3b8" roughness={0.4} metalness={0.5} />
+                <boxGeometry args={[0.05, 0.56, 0.05]} />
+                <meshStandardMaterial color="#cbd5e1" roughness={0.4} metalness={0.4} />
               </mesh>
               {/* Diagonal Web */}
-              {sx < 12 && (
-                <mesh position={[sx + 1.5, 0, 0]} rotation={[0, 0, 0.46]}>
-                  <boxGeometry args={[0.05, 0.88, 0.05]} />
-                  <meshStandardMaterial color="#cbd5e1" roughness={0.4} metalness={0.4} />
+              {sx < 8 && (
+                <mesh position={[sx + 1.0, 0, 0]} rotation={[0, 0, 0.44]}>
+                  <boxGeometry args={[0.04, 0.68, 0.04]} />
+                  <meshStandardMaterial color="#e2e8f0" roughness={0.4} metalness={0.3} />
                 </mesh>
               )}
             </group>
@@ -417,11 +465,11 @@ function RoofTrusses() {
         </group>
       ))}
 
-      {/* 3 Longitudinal Steel Cross Beams */}
-      {[-7.5, 0, 7.5].map((bx) => (
-        <mesh key={bx} position={[bx, 8.0, 0]}>
-          <boxGeometry args={[0.1, 0.1, ROOM_DEPTH]} />
-          <meshStandardMaterial color="#64748b" roughness={0.4} metalness={0.6} />
+      {/* 2 Longitudinal Steel Cross Beams along Z at X = -5.0 and X = +5.0 */}
+      {[-5.0, 5.0].map((bx) => (
+        <mesh key={bx} position={[bx, 5.72, 0]}>
+          <boxGeometry args={[0.08, 0.08, ROOM_DEPTH]} />
+          <meshStandardMaterial color="#94a3b8" roughness={0.4} metalness={0.5} />
         </mesh>
       ))}
     </group>
@@ -457,7 +505,7 @@ function WindowGrid({ width, height, cols = 6, rows = 4 }) {
       {/* Vertical Mullions */}
       {Array.from({ length: cols - 1 }).map((_, i) => (
         <mesh key={`vm-${i}`} position={[-width / 2 + (i + 1) * cellW, 0, 0.025]}>
-          <boxGeometry args={[0.04, height, 0.03]} />
+          <boxGeometry args={[0.035, height, 0.03]} />
           <meshStandardMaterial color="#1e293b" roughness={0.4} metalness={0.5} />
         </mesh>
       ))}
@@ -465,7 +513,7 @@ function WindowGrid({ width, height, cols = 6, rows = 4 }) {
       {/* Horizontal Mullions */}
       {Array.from({ length: rows - 1 }).map((_, i) => (
         <mesh key={`hm-${i}`} position={[0, -height / 2 + (i + 1) * cellH, 0.025]}>
-          <boxGeometry args={[width, 0.04, 0.03]} />
+          <boxGeometry args={[width, 0.035, 0.03]} />
           <meshStandardMaterial color="#1e293b" roughness={0.4} metalness={0.5} />
         </mesh>
       ))}
@@ -474,42 +522,42 @@ function WindowGrid({ width, height, cols = 6, rows = 4 }) {
 }
 
 /**
- * 3D Two-Level Loft Room Architecture (Ground Floor, Mezzanine, Windows & Decal AO)
+ * 3D Two-Level Loft Room Architecture (Ground Floor, Mezzanine, Single Pillar & Windows)
  */
 function LoftArchitecture({ onWallClick }) {
   return (
     <group>
-      {/* 1. Ground Floor (Y = 0): Light concrete-gray floor (#deded9) */}
+      {/* 1. Ground Floor (Y = 0): Light concrete-gray floor (#deded9, 21m x 14m) */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow onClick={onWallClick}>
         <planeGeometry args={[ROOM_WIDTH, ROOM_DEPTH]} />
         <meshStandardMaterial color="#deded9" roughness={0.45} metalness={0.05} />
       </mesh>
 
-      {/* 2. Main Ceiling (Y = 9.0): Crisp matte white (#f8fafc) */}
+      {/* 2. Main Ceiling (Y = 6.5): Crisp matte white (#f8fafc) */}
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, ROOM_HEIGHT, 0]}>
         <planeGeometry args={[ROOM_WIDTH, ROOM_DEPTH]} />
         <meshStandardMaterial color="#f8fafc" roughness={0.9} />
       </mesh>
 
-      {/* 3. North / Back Wall (Z = -10): White (#f5f5f2) */}
+      {/* 3. North / Back Wall (Z = -7.0): White (#f5f5f2) */}
       <mesh position={[0, ROOM_HEIGHT / 2, -ROOM_DEPTH / 2]} rotation={[0, 0, 0]} receiveShadow onClick={onWallClick}>
         <planeGeometry args={[ROOM_WIDTH, ROOM_HEIGHT]} />
         <meshStandardMaterial color="#f5f5f2" roughness={0.85} />
       </mesh>
 
-      {/* 4. South / Front Wall (Z = +10): White (#f5f5f2) */}
+      {/* 4. South / Front Wall (Z = +7.0): White (#f5f5f2) */}
       <mesh position={[0, ROOM_HEIGHT / 2, ROOM_DEPTH / 2]} rotation={[0, Math.PI, 0]} receiveShadow onClick={onWallClick}>
         <planeGeometry args={[ROOM_WIDTH, ROOM_HEIGHT]} />
         <meshStandardMaterial color="#f5f5f2" roughness={0.85} />
       </mesh>
 
-      {/* 5. West Wall (X = -15): White (#f5f5f2) */}
+      {/* 5. West Wall (X = -10.5): White (#f5f5f2) */}
       <mesh position={[-ROOM_WIDTH / 2, ROOM_HEIGHT / 2, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow onClick={onWallClick}>
         <planeGeometry args={[ROOM_DEPTH, ROOM_HEIGHT]} />
         <meshStandardMaterial color="#f5f5f2" roughness={0.85} />
       </mesh>
 
-      {/* 6. East Wall (X = +15): White (#f5f5f2) */}
+      {/* 6. East Wall (X = +10.5): White (#f5f5f2) */}
       <mesh position={[ROOM_WIDTH / 2, ROOM_HEIGHT / 2, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow onClick={onWallClick}>
         <planeGeometry args={[ROOM_DEPTH, ROOM_HEIGHT]} />
         <meshStandardMaterial color="#f5f5f2" roughness={0.85} />
@@ -533,72 +581,66 @@ function LoftArchitecture({ onWallClick }) {
         <meshStandardMaterial color="#cbd5e1" roughness={0.4} />
       </mesh>
 
-      {/* 8. MEZZANINE SLAB: 30m wide x 6m deep (Top Y = 3.6m, Thickness = 0.3m) */}
-      <group position={[0, MEZZANINE_HEIGHT - MEZZANINE_THICKNESS / 2, (MEZZANINE_Z_FRONT + -ROOM_DEPTH / 2) / 2]}>
+      {/* 8. MEZZANINE SLAB: 21m wide x 4.5m deep (Top Y = 3.0m, Slab Thickness = 0.25m, Ceiling Underneath = 2.75m) */}
+      <group position={[0, MEZZANINE_HEIGHT - MEZZANINE_THICKNESS / 2, (MEZZANINE_Z_FRONT + MEZZANINE_Z_BACK) / 2]}>
         {/* Slab Solid Box */}
         <mesh castShadow receiveShadow onClick={onWallClick}>
           <boxGeometry args={[MEZZANINE_WIDTH, MEZZANINE_THICKNESS, MEZZANINE_DEPTH]} />
-          <meshStandardMaterial color="#e2e2dd" roughness={0.4} metalness={0.05} />
-        </mesh>
-        {/* Front Edge Steel Fascia Trim */}
-        <mesh position={[0, 0, MEZZANINE_DEPTH / 2 + 0.015]}>
-          <boxGeometry args={[MEZZANINE_WIDTH, MEZZANINE_THICKNESS + 0.04, 0.03]} />
-          <meshStandardMaterial color="#475569" roughness={0.3} metalness={0.6} />
+          <meshStandardMaterial color="#deded9" roughness={0.45} metalness={0.05} />
         </mesh>
       </group>
 
-      {/* 9. Mezzanine Support Columns (3 square steel columns, 0.35m square, ground floor height = 3.3m) */}
-      {[-8.0, 0.0, 7.5].map((cx) => (
-        <mesh key={cx} position={[cx, 1.65, MEZZANINE_Z_FRONT]} castShadow receiveShadow>
-          <boxGeometry args={[0.35, 3.3, 0.35]} />
-          <meshStandardMaterial color="#334155" roughness={0.3} metalness={0.6} />
-        </mesh>
-      ))}
+      {/* Mezzanine Slightly Thicker Front Fascia Beam (0.4m high, gives robust architectural support profile) */}
+      <mesh position={[0, MEZZANINE_HEIGHT - 0.2, MEZZANINE_Z_FRONT + 0.025]}>
+        <boxGeometry args={[MEZZANINE_WIDTH, 0.4, 0.05]} />
+        <meshStandardMaterial color="#f8fafc" roughness={0.6} metalness={0.0} />
+      </mesh>
 
-      {/* 10. Mezzanine Front Railing */}
+      {/* 9. THE ONLY PILLAR: Single slim square column (0.4m x 0.4m, white) under front edge center (X = 0, Z = -2.5) */}
+      <mesh
+        position={[PILLAR_X, (MEZZANINE_HEIGHT - MEZZANINE_THICKNESS) / 2, PILLAR_Z]}
+        castShadow
+        receiveShadow
+      >
+        <boxGeometry args={[PILLAR_SIZE, MEZZANINE_HEIGHT - MEZZANINE_THICKNESS, PILLAR_SIZE]} />
+        <meshStandardMaterial color="#ffffff" roughness={0.85} metalness={0.0} />
+      </mesh>
+
+      {/* 10. Mezzanine Front Railing (All White) */}
       <MezzanineRailing />
 
-      {/* 11. Open Staircase along East Wall */}
+      {/* 11. Open Staircase along East Wall (All White) */}
       <Staircase />
 
-      {/* 12. Steel Roof Trusses */}
+      {/* 12. Steel Roof Trusses (3 trusses) */}
       <RoofTrusses />
 
-      {/* 13. Windows: Two on East Wall (X = 14.96), One on North Wall (Z = -9.96) */}
-      {/* East Window 1 (South side) */}
-      <group position={[14.96, 6.0, 3.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <WindowGrid width={5.4} height={3.2} cols={6} rows={4} />
+      {/* 13. Windows: Exactly ONE on East Wall and ONE on North Wall */}
+      {/* East Window (Centered high on East wall, 6x4 panes) */}
+      <group position={[10.46, 4.2, 0.5]} rotation={[0, -Math.PI / 2, 0]}>
+        <WindowGrid width={4.5} height={2.4} cols={6} rows={4} />
       </group>
-      {/* East Window 2 (North side above stairs) */}
-      <group position={[14.96, 6.0, -4.0]} rotation={[0, -Math.PI / 2, 0]}>
-        <WindowGrid width={5.4} height={3.2} cols={6} rows={4} />
-      </group>
-      {/* North Window high above mezzanine */}
-      <group position={[0, 7.2, -9.96]} rotation={[0, 0, 0]}>
-        <WindowGrid width={10.0} height={2.4} cols={6} rows={4} />
+      {/* North Window (Centered high above mezzanine, 6x4 panes) */}
+      <group position={[0.0, 5.0, -6.96]} rotation={[0, 0, 0]}>
+        <WindowGrid width={6.0} height={1.8} cols={6} rows={4} />
       </group>
 
       {/* 14. Ceiling Central Skylight Strip */}
-      <mesh position={[0, 8.98, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[3.2, 16.0]} />
+      <mesh position={[0, ROOM_HEIGHT - 0.02, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[2.2, 10.0]} />
         <meshStandardMaterial
           color="#ffffff"
           emissive="#ffffff"
-          emissiveIntensity={0.6}
+          emissiveIntensity={0.65}
           roughness={0.1}
         />
       </mesh>
 
       {/* 15. Fake Ambient Occlusion Gradient Decals (Soft contact shadow ribbons) */}
-      {/* Under Mezzanine front edge */}
-      <mesh position={[0, 0.01, -3.8]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[ROOM_WIDTH, 0.8]} />
-        <meshBasicMaterial color="#000000" opacity={0.12} transparent />
-      </mesh>
-      {/* Under Stair Stringer */}
-      <mesh position={[STAIR_X_MIN, 0.01, 0.5]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.6, 9.0]} />
-        <meshBasicMaterial color="#000000" opacity={0.15} transparent />
+      {/* Soft contact shadow ribbon under Mezzanine front edge */}
+      <mesh position={[0, 0.01, -2.35]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[ROOM_WIDTH, 0.7]} />
+        <meshBasicMaterial color="#000000" opacity={0.14} transparent />
       </mesh>
     </group>
   );
@@ -606,7 +648,7 @@ function LoftArchitecture({ onWallClick }) {
 
 /**
  * Centerpiece: Museum Pedestal with Slowly Rotating 3D Name "Nikeleshwaran"
- * Positioned in the middle of the ground floor hall: [0, 0, 2.0]
+ * Scaled down by 25% and placed near middle of ground hall [0, 0, 1.6], clear of stairs
  */
 function Centerpiece({ onInspectCenter }) {
   const groupRef = useRef();
@@ -626,15 +668,15 @@ function Centerpiece({ onInspectCenter }) {
 
   return (
     <group position={[PLINTH_X, 0, PLINTH_Z]}>
-      {/* Pedestal Base */}
-      <mesh position={[0, 0.38, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.7, 0.82, 0.76, 36]} />
+      {/* Pedestal Base (Scaled by 0.75) */}
+      <mesh position={[0, 0.29, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.52, 0.62, 0.58, 36]} />
         <meshStandardMaterial color="#18181b" roughness={0.3} metalness={0.2} />
       </mesh>
 
       {/* Pedestal Collar Accent */}
-      <mesh position={[0, 0.77, 0]}>
-        <cylinderGeometry args={[0.74, 0.74, 0.04, 36]} />
+      <mesh position={[0, 0.595, 0]}>
+        <cylinderGeometry args={[0.55, 0.55, 0.03, 36]} />
         <meshStandardMaterial
           color="#7c8cff"
           roughness={0.2}
@@ -644,18 +686,18 @@ function Centerpiece({ onInspectCenter }) {
         />
       </mesh>
 
-      {/* Rotating 3D Centerpiece Sculpture */}
-      <group ref={groupRef} position={[0, 1.15, 0]}>
+      {/* Rotating 3D Centerpiece Sculpture (Scaled down by 25%) */}
+      <group ref={groupRef} position={[0, 0.88, 0]}>
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[1.7, 0.52, 0.08]} />
+          <boxGeometry args={[1.28, 0.39, 0.06]} />
           <meshStandardMaterial color="#09090b" roughness={0.3} metalness={0.5} />
         </mesh>
-        <mesh position={[0, 0, 0.042]}>
-          <planeGeometry args={[1.66, 0.48]} />
+        <mesh position={[0, 0, 0.032]}>
+          <planeGeometry args={[1.24, 0.35]} />
           <meshBasicMaterial map={nameTexture} />
         </mesh>
-        <mesh position={[0, 0, -0.042]} rotation={[0, Math.PI, 0]}>
-          <planeGeometry args={[1.66, 0.48]} />
+        <mesh position={[0, 0, -0.032]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[1.24, 0.35]} />
           <meshBasicMaterial map={nameTexture} />
         </mesh>
       </group>
@@ -665,6 +707,7 @@ function Centerpiece({ onInspectCenter }) {
 
 /**
  * Individual Framed Exhibit Panel with Label Plaque & Spotlight Accent
+ * Rescaled to 2.6m wide by 1.65m high
  */
 function ExhibitPanel({ category, onSelect, isHovered, onHover, onUnhover }) {
   const panelRef = useRef();
@@ -678,7 +721,7 @@ function ExhibitPanel({ category, onSelect, isHovered, onHover, onUnhover }) {
 
   useFrame(() => {
     if (!panelRef.current) return;
-    const targetLift = isHovered ? 0.08 : 0;
+    const targetLift = isHovered ? 0.06 : 0;
     panelRef.current.position.y = THREE.MathUtils.lerp(
       panelRef.current.position.y,
       targetLift,
@@ -703,9 +746,9 @@ function ExhibitPanel({ category, onSelect, isHovered, onHover, onUnhover }) {
           onUnhover(category.id);
         }}
       >
-        {/* Outer Frame (Box) */}
-        <mesh castShadow receiveShadow position={[0, 0, -0.02]}>
-          <boxGeometry args={[3.24, 2.04, 0.08]} />
+        {/* Outer Frame (Box - 2.64m x 1.69m) */}
+        <mesh castShadow receiveShadow position={[0, 0, -0.015]}>
+          <boxGeometry args={[2.64, 1.69, 0.06]} />
           <meshStandardMaterial
             color="#09090b"
             roughness={0.3}
@@ -715,30 +758,30 @@ function ExhibitPanel({ category, onSelect, isHovered, onHover, onUnhover }) {
           />
         </mesh>
 
-        {/* Canvas Exhibit Print (Surface) */}
-        <mesh position={[0, 0, 0.025]}>
-          <planeGeometry args={[3.2, 2.0]} />
+        {/* Canvas Exhibit Print (Surface - 2.6m x 1.65m, 2048px text texture) */}
+        <mesh position={[0, 0, 0.02]}>
+          <planeGeometry args={[2.6, 1.65]} />
           <meshBasicMaterial map={texture} />
         </mesh>
 
         {/* Small Museum Label Plaque Beside Panel */}
-        <group position={[1.88, -0.5, 0]}>
+        <group position={[1.52, -0.35, 0]}>
           <mesh position={[0, 0, 0.015]}>
-            <boxGeometry args={[0.32, 0.45, 0.02]} />
+            <boxGeometry args={[0.26, 0.36, 0.02]} />
             <meshStandardMaterial color="#f8fafc" roughness={0.3} metalness={0.1} />
           </mesh>
-          <mesh position={[-0.12, 0.12, 0.03]}>
-            <planeGeometry args={[0.04, 0.12]} />
+          <mesh position={[-0.09, 0.09, 0.03]}>
+            <planeGeometry args={[0.03, 0.09]} />
             <meshBasicMaterial color={category.color} />
           </mesh>
         </group>
 
         {/* Gallery Focused Spotlight Glow above panel */}
         <pointLight
-          position={[0, 1.4, 0.6]}
+          position={[0, 1.15, 0.5]}
           color="#ffffff"
           intensity={0.8}
-          distance={4.5}
+          distance={4.0}
           decay={2}
         />
       </group>
@@ -934,11 +977,11 @@ function LoftController({
       // Ascend stairs via CatmullRomCurve3 so camera never cuts through mezzanine slab
       const waypoints = [
         startPos,
-        new THREE.Vector3(14.0, 1.65, 6.2),   // Foot of stairs approach
-        new THREE.Vector3(14.0, 1.65, 4.8),   // Step onto first tread
-        new THREE.Vector3(14.0, 3.45, 0.5),   // Mid-flight
-        new THREE.Vector3(14.0, 5.25, -3.8),  // Top stair landing
-        new THREE.Vector3(12.0, 5.25, -5.5),  // Mezzanine slab
+        new THREE.Vector3(9.75, 1.65, 5.2),   // Foot of stairs approach
+        new THREE.Vector3(9.75, 1.65, 4.4),   // Step onto first tread
+        new THREE.Vector3(9.75, 3.15, 1.07),  // Mid-flight
+        new THREE.Vector3(9.75, 4.65, -2.4),  // Top stair landing
+        new THREE.Vector3(7.5, 4.65, -3.8),   // Mezzanine slab arrival
         targetPos                             // Panel inspect spot
       ];
       flyPathRef.current = {
@@ -983,7 +1026,7 @@ function LoftController({
       euler.current.setFromQuaternion(camera.quaternion, 'YXZ');
 
       // Update floor indicator
-      onFloorChange?.(camera.position.y >= 3.0 ? 1 : 0);
+      onFloorChange?.(camera.position.y >= 2.5 ? 1 : 0);
       return;
     }
 
@@ -1071,7 +1114,7 @@ function LoftController({
       camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetEyeY, 0.2);
 
       // Floor indicator state callback
-      onFloorChange?.(camera.position.y >= 3.0 ? 1 : 0);
+      onFloorChange?.(camera.position.y >= 2.5 ? 1 : 0);
     }
   });
 
@@ -1237,7 +1280,7 @@ export default function SkillsGallery3D({
           fov: 56,
           position: PREVIEW_CAM_POS,
           near: 0.1,
-          far: 85
+          far: 45
         }}
         className="w-full h-full touch-none pointer-events-auto cursor-crosshair"
         gl={{
@@ -1247,26 +1290,30 @@ export default function SkillsGallery3D({
         }}
       >
         <Suspense fallback={null}>
-          <fog attach="fog" args={['#f5f5f2', 32, 85]} />
+          <fog attach="fog" args={['#f5f5f2', 20, 48]} />
 
           {/* High-Key Bright Loft Lighting */}
           <ambientLight intensity={1.3} />
           <hemisphereLight skyColor="#ffffff" groundColor="#deded9" intensity={1.0} />
           <directionalLight
-            position={[12, 10, 6]}
+            position={[9, 8, 5]}
             intensity={1.3}
             castShadow={enableShadows}
             shadow-mapSize-width={1024}
             shadow-mapSize-height={1024}
             shadow-bias={-0.0001}
             shadow-camera-near={1}
-            shadow-camera-far={45}
-            shadow-camera-left={-16}
-            shadow-camera-right={16}
-            shadow-camera-top={12}
-            shadow-camera-bottom={-12}
+            shadow-camera-far={32}
+            shadow-camera-left={-11.5}
+            shadow-camera-right={11.5}
+            shadow-camera-top={8.5}
+            shadow-camera-bottom={-8.5}
           />
-          <pointLight position={[0, 7.5, 0]} intensity={0.5} distance={25} color="#ffffff" />
+          {/* Main Hall Ambient Fill */}
+          <pointLight position={[0, 5.8, 0]} intensity={0.4} distance={18} color="#ffffff" />
+
+          {/* Soft Fill Light under the Mezzanine (prevents dark under-slab shadowing) */}
+          <pointLight position={[0, 2.0, -4.75]} intensity={0.7} distance={12} color="#ffffff" />
 
           {/* Two-Level Loft Room Architecture */}
           <LoftArchitecture
