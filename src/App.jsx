@@ -9,6 +9,8 @@ export default function App() {
       window.history.replaceState(null, '', '/#experience');
     } else if (path === '/about' || path === '/about/') {
       window.history.replaceState(null, '', '/#about');
+    } else if (path === '/skills' || path === '/skills/') {
+      window.history.replaceState(null, '', '/#skills');
     }
   }, []);
 

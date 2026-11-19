@@ -8,6 +8,7 @@ import TerminalWindow from '../components/TerminalWindow';
 import ExperienceHeading from '../components/ExperienceHeading';
 import CometDial from '../components/CometDial';
 import AboutSection from '../components/AboutSection';
+import SkillsSection from '../components/SkillsSection';
 import { playClickSound } from '../lib/navigation';
 import mePhoto from '../assets/me.png';
 
@@ -158,8 +159,14 @@ export default function Home() {
 
       const aboutEl = document.getElementById('about');
       const expEl = document.getElementById('experience');
+      const skillsEl = document.getElementById('skills');
 
-      if (expEl && expEl.getBoundingClientRect().top <= window.innerHeight * 0.45) {
+      if (skillsEl && skillsEl.getBoundingClientRect().top <= window.innerHeight * 0.45) {
+        setActiveSection('skills');
+        if (window.location.hash !== '#skills') {
+          window.history.replaceState(null, '', '#skills');
+        }
+      } else if (expEl && expEl.getBoundingClientRect().top <= window.innerHeight * 0.45) {
         setActiveSection('experience');
         if (window.location.hash !== '#experience') {
           window.history.replaceState(null, '', '#experience');
@@ -171,7 +178,7 @@ export default function Home() {
         }
       } else {
         setActiveSection('home');
-        if (window.location.hash === '#experience' || window.location.hash === '#about') {
+        if (window.location.hash === '#skills' || window.location.hash === '#experience' || window.location.hash === '#about') {
           window.history.replaceState(null, '', '#home');
         }
       }
@@ -182,7 +189,7 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Handle direct loads to /#about, /#experience or /experience
+  // Handle direct loads to /#about, /#experience, /#skills or corresponding paths
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const path = window.location.pathname.toLowerCase();
@@ -192,9 +199,25 @@ export default function Home() {
       window.history.replaceState(null, '', '/#experience');
     } else if (path === '/about' || path === '/about/') {
       window.history.replaceState(null, '', '/#about');
+    } else if (path === '/skills' || path === '/skills/') {
+      window.history.replaceState(null, '', '/#skills');
     }
 
-    if (hash === '#experience' || path === '/experience' || path === '/experience/') {
+    if (hash === '#skills' || path === '/skills' || path === '/skills/') {
+      setActiveSection('skills');
+      const scrollToSkills = () => {
+        const el = document.getElementById('skills');
+        if (el) el.scrollIntoView({ behavior: 'auto' });
+      };
+      const t1 = setTimeout(scrollToSkills, 60);
+      const t2 = setTimeout(scrollToSkills, 250);
+      const t3 = setTimeout(scrollToSkills, 600);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
+    } else if (hash === '#experience' || path === '/experience' || path === '/experience/') {
       setActiveSection('experience');
       const scrollToExp = () => {
         const el = document.getElementById('experience');
@@ -231,7 +254,10 @@ export default function Home() {
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.toLowerCase();
-      if (hash === '#experience') {
+      if (hash === '#skills') {
+        const el = document.getElementById('skills');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      } else if (hash === '#experience') {
         const el = document.getElementById('experience');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
       } else if (hash === '#about') {
@@ -328,7 +354,7 @@ export default function Home() {
       {/* ================= 1. FIXED TOP NAVBAR ================= */}
       <header
         className={`fixed top-0 left-0 right-0 z-40 w-full px-4 sm:px-6 min-[900px]:px-[4vw] flex items-center justify-between transition-all duration-300 min-h-[clamp(60px,7.5vh,80px)] ${
-          isScrolled
+          isScrolled || activeSection === 'skills'
             ? 'bg-white/85 backdrop-blur-md border-b border-neutral-200/80 shadow-xs py-3 sm:py-3.5'
             : 'bg-transparent border-b border-transparent py-[clamp(16px,2.5vh,28px)]'
         }`}
@@ -387,6 +413,17 @@ export default function Home() {
               [1+]
             </span>
           </button>
+          <button
+            type="button"
+            onClick={() => scrollToSection('skills')}
+            className={`cursor-pointer transition-colors ${
+              activeSection === 'skills'
+                ? 'text-black font-bold border-b-2 border-black pb-0.5'
+                : 'text-neutral-600 hover:text-black'
+            }`}
+          >
+            Skills
+          </button>
         </nav>
 
         {/* Right: Actions */}
@@ -442,7 +479,8 @@ export default function Home() {
             {[
               { label: 'Home', id: 'home', active: activeSection === 'home' },
               { label: 'About', id: 'about', active: activeSection === 'about' },
-              { label: 'Experience', id: 'experience', count: '1+', active: activeSection === 'experience' }
+              { label: 'Experience', id: 'experience', count: '1+', active: activeSection === 'experience' },
+              { label: 'Skills', id: 'skills', active: activeSection === 'skills' }
             ].map((item) => (
               <button
                 key={item.label}
@@ -716,6 +754,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ================= 4. SKILLS SECTION ================= */}
+      <SkillsSection />
     </main>
   );
 }
