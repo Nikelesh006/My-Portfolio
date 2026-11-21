@@ -149,6 +149,21 @@ export default function Home() {
     }
   };
 
+  // Measure fixed navbar height and store in CSS variable --nav-h
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const updateNavH = () => {
+      const headerEl = document.querySelector('header');
+      if (headerEl) {
+        const h = Math.round(headerEl.getBoundingClientRect().height);
+        document.documentElement.style.setProperty('--nav-h', `${h}px`);
+      }
+    };
+    updateNavH();
+    window.addEventListener('resize', updateNavH);
+    return () => window.removeEventListener('resize', updateNavH);
+  }, []);
+
   // Scroll listener for translucent navbar transition (> 80px) and active section tracking
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -354,7 +369,7 @@ export default function Home() {
       {/* ================= 1. FIXED TOP NAVBAR ================= */}
       <header
         className={`fixed top-0 left-0 right-0 z-40 w-full px-4 sm:px-6 min-[900px]:px-[4vw] flex items-center justify-between transition-all duration-300 min-h-[clamp(60px,7.5vh,80px)] ${
-          isScrolled || activeSection === 'skills'
+          isScrolled || activeSection === 'skills' || activeSection === 'about' || activeSection === 'experience'
             ? 'bg-white/85 backdrop-blur-md border-b border-neutral-200/80 shadow-xs py-3 sm:py-3.5'
             : 'bg-transparent border-b border-transparent py-[clamp(16px,2.5vh,28px)]'
         }`}
@@ -364,7 +379,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => scrollToSection('home')}
-            className="text-xs sm:text-sm font-bold tracking-wider uppercase text-neutral-900 select-none cursor-pointer"
+            className="text-xs sm:text-sm font-bold tracking-wider uppercase select-none cursor-pointer transition-colors text-neutral-900"
             aria-label="Nikeleshwaran Portfolio Home"
           >
             Nikel
@@ -432,7 +447,7 @@ export default function Home() {
           <a
             href="mailto:nikelesh2006@gmail.com"
             onClick={playClickSound}
-            className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full bg-[#0a0a0a] text-white text-[11px] sm:text-sm font-semibold hover:bg-neutral-800 transition-all shadow-xs shrink-0"
+            className="inline-flex items-center gap-1 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full text-[11px] sm:text-sm font-semibold transition-all shadow-xs shrink-0 bg-[#0a0a0a] text-white hover:bg-neutral-800"
           >
             <span>Let's Talk</span>
             <ArrowUpRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -445,7 +460,7 @@ export default function Home() {
               playClickSound();
               setMobileMenuOpen(!mobileMenuOpen);
             }}
-            className="min-[900px]:hidden flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100/90 hover:bg-neutral-200 text-neutral-800 transition-colors shrink-0"
+            className="min-[900px]:hidden flex items-center justify-center w-8 h-8 rounded-full transition-colors shrink-0 bg-neutral-100/90 hover:bg-neutral-200 text-neutral-800"
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}

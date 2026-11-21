@@ -4,6 +4,7 @@
 @import "@fontsource-variable/geist";
 
 :root {
+  --nav-h: 72px;
   --frame: 0px;
   --frame-bg: #ffffff;
 }
@@ -31,11 +32,11 @@ html {
 }
 
 #home,
-#about,
 #experience {
   scroll-margin-top: clamp(64px, 7.5vh, 80px);
 }
 
+#about,
 #skills {
   scroll-margin-top: 0px;
 }
@@ -293,5 +294,78 @@ body {
 
   html {
     @apply font-sans;
+  }
+}
+
+/* ABOUT ME Display Word Gradient & Mask */
+.about-display-word {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  user-select: none;
+  color: #000000;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.09));
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  will-change: transform;
+  white-space: nowrap;
+  background: linear-gradient(#000000 0% 40%, rgba(25, 25, 30, 0.8) 70%, rgba(70, 70, 80, 0.28) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  margin: 0;
+  padding: 0 0.05em;
+  font-family: 'Krona One', 'Clash Display', 'Space Grotesk', sans-serif;
+  font-size: clamp(40px, 9vh, 110px);
+  font-weight: 800;
+  line-height: 1;
+  display: inline-block;
+  -webkit-mask-image: linear-gradient(#000000 0% 45%, rgba(0, 0, 0, 0.25) 100%);
+  mask-image: linear-gradient(#000000 0% 45%, rgba(0, 0, 0, 0.25) 100%);
+}
+
+@media (max-width: 639px) {
+  .about-display-word {
+    font-size: clamp(28px, 7.5vw, 42px);
+    letter-spacing: 0.02em;
+  }
+}
+
+/* About Section 1-Screen Framing */
+#about {
+  scroll-margin-top: 0px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 900px) and (min-height: 700px) {
+  .about-section-container {
+    height: 100dvh !important;
+    min-height: 100vh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding-top: calc(var(--nav-h, 72px) + 2vh) !important;
+    padding-bottom: calc(4vh + 8px) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 899px), (max-height: 699px) {
+  .about-section-container {
+    height: auto !important;
+    min-height: 100dvh !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding-top: calc(var(--nav-h, 72px) + 5vh) !important;
+    padding-bottom: 6vh !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
   }
 }
